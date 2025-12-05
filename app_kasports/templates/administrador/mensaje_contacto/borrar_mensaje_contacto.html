@@ -1,0 +1,14 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Borrar Mensaje de Contacto</h2>
+<p>¿Estás seguro de que deseas eliminar el mensaje de <strong>{{ mensaje.nombre_remitente }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, borrar</button>
+    <a href="{% url 'app_kasports:ver_mensajes' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

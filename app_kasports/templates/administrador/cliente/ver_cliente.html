@@ -1,0 +1,96 @@
+{% extends 'administrador/base.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<div class="content-title">
+    <h2>Clientes</h2>
+    <a href="{% url 'app_kasports:agregar_cliente' %}" class="btn">Agregar Cliente</a>
+</div>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="username" {% if campo == 'username' %}selected{% endif %}>Usuario</option>
+        <option value="nombre" {% if campo == 'nombre' %}selected{% endif %}>Nombre</option>
+        <option value="correo" {% if campo == 'correo' %}selected{% endif %}>Correo</option>
+        <option value="telefono" {% if campo == 'telefono' %}selected{% endif %}>Teléfono</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda...">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<table class="table-fixed">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Fecha registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for c in page_obj %}
+        <tr>
+            <td>{{ c.id }}</td>
+            <td>
+                {% if campo == 'username' and query %}
+                    {{ c.user.username|highlight:query|safe }}
+                {% else %}
+                    {{ c.user.username }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'nombre' and query %}
+                    {% with texto=c.user.first_name|add:" "|add:c.user.last_name %}
+                        {{ texto|highlight:query|safe }}
+                    {% endwith %}
+                {% else %}
+                    {{ c.user.first_name }} {{ c.user.last_name }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'correo' and query %}
+                    {{ c.user.email|highlight:query|safe }}
+                {% else %}
+                    {{ c.user.email }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'telefono' and query %}
+                    {{ c.telefono|highlight:query|safe }}
+                {% else %}
+                    {{ c.telefono }}
+                {% endif %}
+            </td>
+            <td>{{ c.direccion }}</td>
+            <td>{{ c.fecha_registro|date:"d/m/Y" }}</td>
+            <td class="acciones">
+                <a href="{% url 'app_kasports:borrar_cliente' c.id %}" class="btn btn-danger">Borrar</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="8">No hay clientes registrados.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

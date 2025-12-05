@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | KA.Sports</title>
+    <style>
+    body{
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        background-color: aliceblue;
+        text-align: center;
+    }
+    .cont{
+        margin-top: 15vh;
+        margin-left:auto;
+        margin-right: auto;
+        border: 3px solid rgb(35, 143, 150);
+        border-radius: 15px;
+        width: 35vw;
+        height: auto;
+        padding: 15px;
+        background-color: rgb(57,57,154);
+        color: beige;
+    }
+    .login-btn{
+        width:10vw;
+        height: 5vh;
+        border: 2px solid aliceblue;
+        border-radius: 8px;
+        background-color: rgb(35, 143, 150);
+        margin-top: 8px;
+        color:white;
+        cursor:pointer;
+    }
+    img{
+        margin-top: 3vh;
+        margin-bottom: 3vh;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        height: 25vh;
+        border-radius: 10px;
+    }
+    a{
+        color: beige;
+        text-decoration: none;
+    }
+    a:hover{
+        text-decoration: none;
+    }
+    input{
+        width:80%;
+        padding:8px;
+        border-radius:8px;
+        border:1px solid rgb(35,143,150);
+    }
+    .password-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        width: 82%;
+        margin: 0 auto;
+    }
+    .password-container input{
+        flex: 1;
+        margin: 0;
+        width: auto !important;
+    }
+    .password-container button{
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        color: rgb(35, 143, 150);
+        padding: 8px;
+        opacity: 0.6;
+    }
+    .alert{
+        margin-top:10px;
+        padding:8px;
+        border-radius:5px;
+        background:#f8d7da;
+        color:#721c24;
+    }
+    </style>
+</head>
+<body>
+    <div class="cont">
+        <h2>Inicia Sesión</h2>
+        <img src="{% static 'images/logo.png' %}">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <label>Usuario:</label><br>
+            <input type="text" name="username" required><br><br>
+            <label>Contraseña:</label><br>
+            <div class="password-container">
+                <input type="password" name="password" id="password" required>
+                <button type="button" onclick="togglePassword('password', this)">◎</button>
+            </div>
+            <br><br>
+            <button class="login-btn" type="submit">Iniciar Sesión</button><br><br>
+            <a href="{% url 'app_kasports:registro' %}">Registrarse</a>
+            <br><br>
+            <a href="{% url 'app_kasports:index_cliente' %}">Volver al inicio</a>
+        </form>
+    </div>
+</body>
+<script>
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            button.style.opacity = '1';
+        } else {
+            input.type = 'password';
+            button.style.opacity = '0.6';
+        }
+    }
+</script>
+</html>

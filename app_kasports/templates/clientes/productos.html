@@ -1,0 +1,115 @@
+{% extends 'clientes/base_cliente.html' %}
+{% load static %}
+{% load currency_filters %}
+
+{% block contenido %}
+<h1>Productos</h1>
+
+<div class="prod">
+    <h2>Tenis</h2>
+    <div class="prodt">
+        {% for t in top_tenis %}
+        <section class="secp">
+            <h3>{{ t.modelo }}</h3>
+            {% if t.imagen %}
+                <img src="{{ t.imagen.url }}" alt="{{ t.modelo }}">
+            {% else %}
+                <img src="{% static 'images/tenis_placeholder.png' %}" alt="Tenis">
+            {% endif %}
+            <ul>
+                <li>Marca: {{ t.proveedor.nombre }}</li>
+                <li>Modelo: {{ t.modelo }}</li>
+                <li>Estilo: {{ t.estilo }}</li>
+                <li>Color: {{ t.color }}</li>
+                <li>Genero: {{ t.genero }}</li>
+                <li>Tallas disponibles:
+                    {% if t.tallas_disponibles %}
+                        <div class="size-list">
+                            {% for s in t.tallas_disponibles|split_by %}
+                                <span class="size-badge">{{ s }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}-{% endif %}
+                </li>
+                <li>Precio: {{ t.precio }} MXN</li>
+                <li>Stock: {{ t.stock }}</li>
+            </ul>
+        </section>
+        {% endfor %}
+    </div>
+    <a href="{% url 'app_kasports:tenis_lista' %}" class="btn-mas">Ver más</a>
+</div>
+
+<div class="prod">
+    <h2>Ropa</h2>
+    <div class="prodt">
+        {% for r in top_ropa %}
+        <section class="secp">
+            <h3>{{ r.modelo }}</h3>
+            {% if r.imagen %}
+                <img src="{{ r.imagen.url }}" alt="{{ r.modelo }}">
+            {% else %}
+                <img src="{% static 'images/ropa_placeholder.png' %}" alt="Ropa">
+            {% endif %}
+            <ul>
+                <li>Marca: {{ r.proveedor.nombre }}</li>
+                <li>Modelo: {{ r.modelo }}</li>
+                <li>Color: {{ r.color }}</li>
+                <li>Estilo: {{ r.estilo }}</li>
+                <li>Genero: {{ r.genero }}</li>
+                <li>Tallas disponibles:
+                    {% if r.tallas_disponibles %}
+                        <div class="size-list">
+                            {% for s in r.tallas_disponibles|split_by %}
+                                <span class="size-badge">{{ s }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}-{% endif %}
+                </li>
+                <li>Precio: {{ r.precio }} MXN</li>
+                <li>Stock: {{ r.stock }}</li>
+            </ul>
+        </section>
+        {% endfor %}
+    </div>
+    <a href="{% url 'app_kasports:ropa_lista' %}" class="btn-mas">Ver más</a>
+</div>
+
+<div class="prod">
+    <h2>Gorras</h2>
+    <div class="prodt">
+        {% for g in top_gorras %}
+        <section class="secp">
+            <h3>{{ g.modelo }}</h3>
+            {% if g.imagen %}
+                <img src="{{ g.imagen.url }}" alt="{{ g.modelo }}">
+            {% else %}
+                <img src="{% static 'images/gorra_placeholder.png' %}" alt="Gorra">
+            {% endif %}
+            <ul>
+                <li>Marca: {{ g.proveedor.nombre }}</li>
+                <li>Modelo: {{ g.modelo }}</li>
+                <li>Colección: {{ g.coleccion }}</li>
+                <li>Silueta: {{ g.silueta }}</li>
+                <li>Visera: {{ g.visera }}</li>
+                <li>Broche: {{ g.broche }}</li>
+                <li>Color: {{ g.color }}</li>
+                <li>Genero: {{ g.genero }}</li>
+                <li>Tallas disponibles:
+                    {% if g.tallas_disponibles %}
+                        <div class="size-list">
+                            {% for s in g.tallas_disponibles|split_by %}
+                                <span class="size-badge">{{ s }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}-{% endif %}
+                </li>
+                <li>Precio: {{ g.precio }} MXN</li>
+                <li>Stock: {{ g.stock }}</li>
+            </ul>
+        </section>
+        {% endfor %}
+    </div>
+    <a href="{% url 'app_kasports:gorras_lista' %}" class="btn-mas">Ver más</a>
+</div>
+{% endblock %}

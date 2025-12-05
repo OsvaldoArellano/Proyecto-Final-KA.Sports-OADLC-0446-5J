@@ -1,0 +1,29 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Actualizar Mensaje</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <p><strong>Nombre:</strong> {{ mensaje.nombre_remitente }}</p>
+    <p><strong>Correo:</strong> {{ mensaje.email_remitente }}</p>
+
+    <div class="form-group">
+        <label>Mensaje:</label>
+        <textarea rows="5" disabled>{{ mensaje.mensaje }}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Leído:</label>
+        <select name="leido">
+            <option value="True" {% if mensaje.leido %}selected{% endif %}>Sí</option>
+            <option value="False" {% if not mensaje.leido %}selected{% endif %}>No</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'app_kasports:ver_mensajes' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

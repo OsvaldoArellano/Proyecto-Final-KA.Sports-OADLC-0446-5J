@@ -1,0 +1,64 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Actualizar Administrador</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <h3>Datos de cuenta (User)</h3>
+    
+    <div class="form-group">
+        <label>Usuario:</label>
+        <input type="text" name="username" value="{{ admin_obj.user.username }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>Correo:</label>
+        <input type="email" name="email" value="{{ admin_obj.user.email }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>Nombre:</label>
+        <input type="text" name="first_name" value="{{ admin_obj.user.first_name }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>Apellido:</label>
+        <input type="text" name="last_name" value="{{ admin_obj.user.last_name }}" required>
+    </div>
+
+    <div class="form-group">
+        <p style="margin-top:10px;font-size:0.9rem;">
+            Si no deseas cambiar la contraseña, deja estos campos en blanco.
+        </p>
+        <label>Nueva contraseña:</label>
+        <input type="password" name="password1">
+    </div>
+
+    <div class="form-group">
+        <label>Confirmar nueva contraseña:</label>
+        <input type="password" name="password2">
+    </div>
+
+    <div class="form-group">
+        <label>Activo:</label>
+        <select name="is_active">
+            <option value="True" {% if admin_obj.user.is_active %}selected{% endif %}>Sí</option>
+            <option value="False" {% if not admin_obj.user.is_active %}selected{% endif %}>No</option>
+        </select>
+    </div>
+
+    <h3>Datos del administrador</h3>
+    
+    <div class="form-group">
+        <label>Teléfono:</label>
+        <input type="text" name="telefono" value="{{ admin_obj.telefono }}">
+    </div>
+
+    <button type="submit" class="btn">Actualizar</button>
+    <a href="{% url 'app_kasports:ver_administradores' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

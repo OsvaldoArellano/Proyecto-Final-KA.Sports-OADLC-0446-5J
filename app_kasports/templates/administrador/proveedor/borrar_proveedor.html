@@ -1,0 +1,13 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Borrar Proveedor</h2>
+<p>¿Estás seguro de que deseas eliminar al proveedor <strong>{{ proveedor.nombre }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, borrar</button>
+    <a href="{% url 'app_kasports:ver_proveedores' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

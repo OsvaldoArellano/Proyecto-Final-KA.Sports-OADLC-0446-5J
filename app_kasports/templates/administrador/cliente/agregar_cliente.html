@@ -1,0 +1,43 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Agregar Cliente</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Usuario:</label>
+    <input type="text" name="username" required>
+
+    <label>Nombre:</label>
+    <input type="text" name="first_name" required>
+
+    <label>Apellido:</label>
+    <input type="text" name="last_name" required>
+
+    <label>Correo electrónico:</label>
+    <input type="email" name="email" required>
+
+    <label>Teléfono:</label>
+    <input type="text" name="telefono" required>
+
+    <label>Dirección:</label>
+    <textarea name="direccion" rows="3" required></textarea>
+
+    <label>Contraseña:</label>
+    <input type="password" name="password1" required>
+
+    <label>Confirmar contraseña:</label>
+    <input type="password" name="password2" required>
+
+    <label>Activo:</label>
+    <select name="is_active">
+        <option value="True">Sí</option>
+        <option value="False">No</option>
+    </select>
+
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'app_kasports:ver_clientes' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

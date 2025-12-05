@@ -1,0 +1,119 @@
+{% extends 'clientes/base_cliente.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<h1>Ropa</h1>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="modelo" {% if campo == 'modelo' %}selected{% endif %}>Modelo</option>
+        <option value="color" {% if campo == 'color' %}selected{% endif %}>Color</option>
+        <option value="estilo" {% if campo == 'estilo' %}selected{% endif %}>Estilo</option>
+        <option value="genero" {% if campo == 'genero' %}selected{% endif %}>Género</option>
+        <option value="talla" {% if campo == 'talla' %}selected{% endif %}>Talla</option>
+        <option value="proveedor" {% if campo == 'proveedor' %}selected{% endif %}>Proveedor</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda...">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<div style="text-align:center; margin-top: 10px; margin-bottom: 20px;">
+    <button class="btn" onclick="mostrarGuiaTallasRopa()">Guía de tallas de ropa</button>
+</div>
+<div id="guia-tallas-ropa-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:24px 18px; border-radius:10px; max-width:500px; margin:auto; position:relative; top:10vh;">
+        <h3>Guía de tallas de ropa</h3>
+        <p>Consulta la siguiente tabla para elegir la talla adecuada de tu prenda. Las medidas pueden variar según el fabricante.</p>
+        <table style="width:100%; max-width:500px; border-collapse:collapse;">
+            <tr><th>Talla</th><th>Pecho (cm)</th><th>Cintura (cm)</th><th>Cadera (cm)</th></tr>
+            <tr><td>XS</td><td>81-86</td><td>66-71</td><td>84-89</td></tr>
+            <tr><td>S</td><td>86-92</td><td>71-76</td><td>89-94</td></tr>
+            <tr><td>M</td><td>92-100</td><td>76-84</td><td>94-102</td></tr>
+            <tr><td>L</td><td>100-108</td><td>84-92</td><td>102-110</td></tr>
+            <tr><td>XL</td><td>108-116</td><td>92-102</td><td>110-118</td></tr>
+            <tr><td>2XL</td><td>116-124</td><td>102-112</td><td>118-126</td></tr>
+        </table>
+        <button class="btn btn-danger" onclick="cerrarGuiaTallasRopa()" style="margin-top:10px;">Cerrar</button>
+    </div>
+</div>
+<script>
+function mostrarGuiaTallasRopa() {
+    document.getElementById('guia-tallas-ropa-modal').style.display = 'flex';
+}
+function cerrarGuiaTallasRopa() {
+    document.getElementById('guia-tallas-ropa-modal').style.display = 'none';
+}
+</script>
+
+<div class="prodt">
+    {% for r in page_obj %}
+    <section class="secp">
+        <h3>{% if campo == 'modelo' %}{{ r.modelo|highlight:query|safe }}{% else %}{{ r.modelo }}{% endif %}</h3>
+        {% if r.imagen %}
+            <img src="{{ r.imagen.url }}" alt="{{ r.modelo }}">
+        {% endif %}
+        <ul>
+            <li>Marca: {% if campo == 'proveedor' %}{{ r.proveedor.nombre|highlight:query|safe }}{% else %}{{ r.proveedor.nombre }}{% endif %}</li>
+            <li>Modelo: {% if campo == 'modelo' %}{{ r.modelo|highlight:query|safe }}{% else %}{{ r.modelo }}{% endif %}</li>
+            <li>Color: {% if campo == 'color' %}{{ r.color|highlight:query|safe }}{% else %}{{ r.color }}{% endif %}</li>
+            <li>Estilo: {% if campo == 'estilo' %}{{ r.estilo|highlight:query|safe }}{% else %}{{ r.estilo }}{% endif %}</li>
+            <li>Genero: {% if campo == 'genero' %}{{ r.genero|highlight:query|safe }}{% else %}{{ r.genero }}{% endif %}</li>
+            <li>Tallas disponibles:
+                {% if r.tallas_disponibles %}
+                    <div class="size-list">
+                        {% for s in r.tallas_disponibles|split_by %}
+                            <span class="size-badge">{{ s }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    -
+                {% endif %}
+            </li>
+            <li>Precio: {{ r.precio }} MXN</li>
+            <li>Stock: {{ r.stock }}</li>
+        </ul>
+        {% if user.is_authenticated and user.cliente %}
+            <form method="post" action="{% url 'app_kasports:agregar_carrito' 'ropa' r.id %}">
+                {% csrf_token %}
+                {% if r.tallas_disponibles %}
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:nowrap;">
+                        <label for="talla_{{ r.id }}" style="margin-bottom:0;">Talla:</label>
+                        <select name="talla" id="talla_{{ r.id }}" class="size-select" required style="margin-bottom:0;">
+                            {% for s in r.tallas_disponibles|split_by %}
+                                <option value="{{ s }}">{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="cantidad_{{ r.id }}" style="margin-bottom:0;">Cantidad:</label>
+                        <input type="number" name="cantidad" id="cantidad_{{ r.id }}" min="1" max="{{ r.stock }}" value="1" style="width:60px; margin-bottom:0;" required>
+                    </div>
+                {% else %}
+                    <span>-</span>
+                {% endif %}
+                <button type="submit" class="btn" style="margin-top:8px;">Agregar al carrito</button>
+            </form>
+        {% elif user.is_authenticated and user.administrador %}
+            <p style="color:red;">Opción solo para clientes</p>
+        {% else %}
+            <p style="color:red;">Inicia sesión o regístrate</p>
+        {% endif %}
+    </section>
+    {% empty %}
+    <p>No hay productos disponibles.</p>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Agregar Detalle de Entrega</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label>Venta:</label>
+        <select name="venta_id" required>
+            {% for v in ventas %}
+            <option value="{{ v.id }}">Venta #{{ v.id }} - {{ v.cliente.user.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Dirección de entrega:</label>
+        <textarea name="direccion_entrega" rows="3" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Fecha envío:</label>
+        <input type="date" name="fecha_envio">
+    </div>
+
+    <div class="form-group">
+        <label>Fecha entrega:</label>
+        <input type="date" name="fecha_entrega">
+    </div>
+
+    <div class="form-group">
+        <label>Estado entrega:</label>
+        <select name="estado_entrega">
+            <option value="Pendiente">Pendiente</option>
+            <option value="En tránsito">En tránsito</option>
+            <option value="Entregado">Entregado</option>
+            <option value="Fallido">Fallido</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Evidencia (imagen):</label>
+        <input type="file" name="imagen_evidencia" accept="image/*">
+    </div>
+
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'app_kasports:ver_detalle_entrega' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

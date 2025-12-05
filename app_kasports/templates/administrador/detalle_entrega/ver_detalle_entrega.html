@@ -1,0 +1,95 @@
+{% extends 'administrador/base.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<div class="content-title">
+    <h2>Detalle de Entregas</h2>
+</div>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="venta" {% if campo == 'venta' %}selected{% endif %}>Venta ID</option>
+        <option value="estado" {% if campo == 'estado' %}selected{% endif %}>Estado</option>
+        <option value="cliente" {% if campo == 'cliente' %}selected{% endif %}>Cliente</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda..." class="{% if query %}highlight{% endif %}" aria-label="Buscar">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<table class="table-fixed">
+    <thead>
+        <tr>
+            <th>Venta</th>
+            <th>Cliente</th>
+            <th>Dirección entrega</th>
+            <th>Fecha envío</th>
+            <th>Fecha entrega</th>
+            <th>Estado entrega</th>
+            <th>Evidencia</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in page_obj %}
+        <tr>
+            <td>
+                {% if campo == 'venta' and query %}
+                    #{{ d.venta.id|highlight:query|safe }}
+                {% else %}
+                    #{{ d.venta.id }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'cliente' and query %}
+                    {{ d.venta.cliente.user.username|default:"N/A"|highlight:query|safe }}
+                {% else %}
+                    {{ d.venta.cliente.user.username|default:"N/A" }}
+                {% endif %}
+            </td>
+            <td>{{ d.direccion_entrega }}</td>
+            <td>{{ d.fecha_envio|default:"-" }}</td>
+            <td>{{ d.fecha_entrega|default:"-" }}</td>
+            <td>
+                {% if campo == 'estado' and query %}
+                    {{ d.estado_entrega|highlight:query|safe }}
+                {% else %}
+                    {{ d.estado_entrega }}
+                {% endif %}
+            </td>
+            <td>
+                {% if d.imagen_evidencia %}
+                    <a href="{{ d.imagen_evidencia.url }}" target="_blank">
+                        <img src="{{ d.imagen_evidencia.url }}" alt="Evidencia" style="height:50px;border-radius:5px;">
+                    </a>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td class="acciones">
+                <a href="{% url 'app_kasports:actualizar_detalle_entrega' d.id %}" class="btn btn-edit">Editar</a>
+                <a href="{% url 'app_kasports:borrar_detalle_entrega' d.id %}" class="btn btn-danger">Borrar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No hay detalles de entrega registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'clientes/base_cliente.html' %}
+
+{% block contenido %}
+<h1>Detalle de Entrega</h1>
+
+<h3>Venta #{{ venta.id }}</h3>
+<p><strong>Fecha venta:</strong> {{ venta.fecha_venta|date:"d/m/Y" }}</p>
+<p><strong>Dirección de entrega:</strong> {{ detalle_entrega.direccion_entrega }}</p>
+<p><strong>Estado entrega:</strong> {{ detalle_entrega.estado_entrega }}</p>
+<p><strong>Fecha envío:</strong> {{ detalle_entrega.fecha_envio|default:"-" }}</p>
+<p><strong>Fecha entrega:</strong> {{ detalle_entrega.fecha_entrega|default:"-" }}</p>
+
+<h3>Productos</h3>
+<ul>
+    {% for d in detalles_carrito %}
+    {% with prod=d.ropa|default_if_none:d.tenis|default_if_none:d.gorra %}
+    <li>{{ prod.modelo }} - Cantidad: {{ d.cantidad }} - Subtotal: {{ d.subtotal }} MXN</li>
+    {% endwith %}
+    {% endfor %}
+</ul>
+
+{% if venta.estado == 'Cancelado' %}
+    <hr>
+    <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 4px; color: #721c24;">
+        <strong>Entrega cancelada</strong>
+    </div>
+{% else %}
+    {% if detalle_entrega and detalle_entrega.estado_entrega == 'Fallido' %}
+        <hr>
+        <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 4px; color: #721c24;">
+            <strong>Entrega cancelada</strong>
+        </div>
+    {% else %}
+        {% if not detalle_entrega or detalle_entrega.estado_entrega != 'Entregado' %}
+            <hr>
+            <h3>Confirmar Entrega</h3>
+            <p>¿Has recibido tu pedido? Confirma la entrega para actualizar el estado de tu compra.</p>
+
+            <div class="confirm-actions">
+                <form method="POST" action="{% url 'app_kasports:confirmar_entrega' venta.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success" name="confirmar" value="si">✓ Sí, Recibí mi pedido</button>
+                </form>
+                
+                <form method="POST" action="{% url 'app_kasports:confirmar_entrega' venta.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" name="confirmar" value="no">✗ No, Aún no llega</button>
+                </form>
+
+                {% if not detalle_entrega or detalle_entrega.estado_entrega != 'Fallido' %}
+                    <form method="POST" action="{% url 'app_kasports:cancelar_entrega' venta.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro que quieres cancelar este pedido? Esta acción registrará la incidencia.');">Cancelar pedido</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% else %}
+            <hr>
+            <div style="background-color: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 4px; color: #155724;">
+                <strong>✓ Entrega confirmada</strong> el {{ detalle_entrega.fecha_entrega|date:"d/m/Y" }}
+            </div>
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+<!-- Subir evidencia de entrega (cliente) -->
+{% if venta.estado == 'Cancelado' %}
+
+{% elif detalle_entrega and detalle_entrega.estado_entrega == 'Fallido' %}
+
+{% else %}
+    <hr>
+    <h3>Subir evidencia de entrega</h3>
+    {% if detalle_entrega and detalle_entrega.imagen_evidencia %}
+        <p><strong>Evidencia:</strong></p>
+        <a href="{{ detalle_entrega.imagen_evidencia.url }}" target="_blank">
+            <img src="{{ detalle_entrega.imagen_evidencia.url }}" alt="Evidencia" style="height:220px;border-radius:6px;">
+        </a>
+    {% else %}
+        <form method="post" enctype="multipart/form-data" action="{% url 'app_kasports:detalle_entrega' venta.id %}">
+            {% csrf_token %}
+            <label>Subir foto de evidencia (si llegó):</label>
+            <input type="file" name="imagen_evidencia" accept="image/*" required>
+            <button type="submit" class="btn">Subir evidencia</button>
+        </form>
+    {% endif %}
+{% endif %}
+
+<hr>
+<div style="margin-top: 20px;">
+    <a href="{% url 'app_kasports:historial_pedidos' %}" class="btn btn-volver">← Volver al Historial</a>
+</div>
+
+{% endblock %}

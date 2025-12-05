@@ -1,0 +1,24 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Actualizar Carrito</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <p><strong>Cliente:</strong> {{ carrito.cliente.user.username }}</p>
+    <p><strong>Total actual:</strong> {{ carrito.total }} MXN</p>
+
+    <label>Estado:</label>
+    <select name="estado">
+        <option value="Activo" {% if carrito.estado == 'Activo' %}selected{% endif %}>Activo</option>
+        <option value="Pendiente" {% if carrito.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+        <option value="Completado" {% if carrito.estado == 'Completado' %}selected{% endif %}>Completado</option>
+        <option value="Cancelado" {% if carrito.estado == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+    </select>
+
+    <button type="submit" class="btn">Actualizar</button>
+    <a href="{% url 'app_kasports:ver_carritos' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

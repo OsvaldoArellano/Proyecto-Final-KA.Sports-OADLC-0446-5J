@@ -1,0 +1,45 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Actualizar Venta</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <p><strong>Cliente:</strong> {{ venta.cliente.user.username }}</p>
+    <p><strong>Carrito:</strong> #{{ venta.carrito.id }}</p>
+
+    <label>Método de pago:</label>
+    <select name="metodo_pago" required>
+        <option value="Tarjeta de Crédito" {% if venta.metodo_pago == 'Tarjeta de Crédito' %}selected{% endif %}>Tarjeta de Crédito</option>
+        <option value="Tarjeta de Débito" {% if venta.metodo_pago == 'Tarjeta de Débito' %}selected{% endif %}>Tarjeta de Débito</option>
+        <option value="PayPal" {% if venta.metodo_pago == 'PayPal' %}selected{% endif %}>PayPal</option>
+        <option value="Transferencia" {% if venta.metodo_pago == 'Transferencia' %}selected{% endif %}>Transferencia</option>
+        <option value="Efectivo" {% if venta.metodo_pago == 'Efectivo' %}selected{% endif %}>Efectivo</option>
+    </select>
+
+    <label>Subtotal:</label>
+    <input type="number" name="subtotal" step="0.01" value="{{ venta.subtotal }}" required>
+
+    <label>Impuesto:</label>
+    <input type="number" name="impuesto" step="0.01" value="{{ venta.impuesto }}" required>
+
+    <label>Costo de envío:</label>
+    <input type="number" name="costo_envio" step="0.01" value="{{ venta.costo_envio }}" required>
+
+    <label>Total:</label>
+    <input type="number" name="total" step="0.01" value="{{ venta.total }}" required>
+
+    <label>Estado:</label>
+    <select name="estado">
+        <option value="En proceso" {% if venta.estado == 'En proceso' %}selected{% endif %}>En proceso</option>
+        <option value="Enviado" {% if venta.estado == 'Enviado' %}selected{% endif %}>Enviado</option>
+        <option value="Entregado" {% if venta.estado == 'Entregado' %}selected{% endif %}>Entregado</option>
+        <option value="Cancelado" {% if venta.estado == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+    </select>
+
+    <button type="submit" class="btn">Actualizar</button>
+    <a href="{% url 'app_kasports:ver_ventas' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

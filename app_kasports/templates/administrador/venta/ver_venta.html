@@ -1,0 +1,100 @@
+{% extends 'administrador/base.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<div class="content-title">
+    <h2>Ventas</h2>
+</div>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="cliente" {% if campo == 'cliente' %}selected{% endif %}>Cliente</option>
+        <option value="id" {% if campo == 'id' %}selected{% endif %}>ID Venta</option>
+        <option value="estado" {% if campo == 'estado' %}selected{% endif %}>Estado</option>
+        <option value="metodo_pago" {% if campo == 'metodo_pago' %}selected{% endif %}>Método de Pago</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda..." class="{% if query %}highlight{% endif %}" aria-label="Buscar">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<table class="table-fixed">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Carrito</th>
+            <th>Fecha</th>
+            <th>Subtotal</th>
+            <th>Impuesto</th>
+            <th>Envío</th>
+            <th>Total</th>
+            <th>Método pago</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for v in page_obj %}
+        <tr>
+            <td>
+                {% if campo == 'id' and query %}
+                    {{ v.id|highlight:query|safe }}
+                {% else %}
+                    {{ v.id }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'cliente' and query %}
+                    {{ v.cliente.user.username|highlight:query|safe }}
+                {% else %}
+                    {{ v.cliente.user.username }}
+                {% endif %}
+            </td>
+            <td>{{ v.carrito.id }}</td>
+            <td>{{ v.fecha_venta|date:"d/m/Y H:i" }}</td>
+            <td>{{ v.subtotal }} MXN</td>
+            <td>{{ v.impuesto }} MXN</td>
+            <td>{{ v.costo_envio }} MXN</td>
+            <td>{{ v.total }} MXN</td>
+            <td>
+                {% if campo == 'metodo_pago' and query %}
+                    {{ v.metodo_pago|highlight:query|safe }}
+                {% else %}
+                    {{ v.metodo_pago }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'estado' and query %}
+                    {{ v.estado|highlight:query|safe }}
+                {% else %}
+                    {{ v.estado }}
+                {% endif %}
+            </td>
+            <td class="acciones">
+                <a href="{% url 'app_kasports:actualizar_venta' v.id %}" class="btn">Editar</a>
+                <a href="{% url 'app_kasports:borrar_venta' v.id %}" class="btn btn-danger">Borrar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="11">No hay ventas registradas.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

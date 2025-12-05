@@ -1,0 +1,26 @@
+{% load static %}
+<header>
+    <a href="{% url 'app_kasports:index_admin' %}">
+        <img src="{% static 'images/l.png' %}" alt="logo">
+    </a>
+
+
+    {% if request.user.is_authenticated %}
+    <div class="user-info">
+        <span>Admin: {{ request.user.get_full_name|default:request.user.username }}</span>
+        <a href="{% url 'app_kasports:index_cliente' %}" class="btn-secondary" style="margin-right: 10px;">Ver como cliente</a>
+        <a href="{% url 'app_kasports:logout' %}">Cerrar sesión</a>
+    </div>
+    {% endif %}
+    <h1>KA.Sports - Panel Admin</h1>
+</header>
+<button class="icon" id="menu-btn">&#9776;</button>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('menu-admin');
+    if(btn && menu){
+        btn.addEventListener('click', ()=> menu.classList.toggle('active'));
+    }
+});
+</script>

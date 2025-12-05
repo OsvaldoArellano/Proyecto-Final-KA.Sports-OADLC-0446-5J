@@ -1,0 +1,28 @@
+{% extends 'administrador/base.html' %}
+{% load static %}
+
+{% block contenido %}
+<h2>Panel Administrativo KA.Sports</h2>
+<p class="admin-welcome">Bienvenido al sistema de administración de KA.Sports.</p>
+
+<div class="prod">
+    <div class="prodt">
+        <section class="secp">
+            <h3>Total de Clientes</h3>
+            <p>{{ total_clientes }}</p>
+        </section>
+        <section class="secp">
+            <h3>Total de Ventas</h3>
+            <p>{{ total_ventas }}</p>
+        </section>
+        <section class="secp">
+            <h3>Total de Productos</h3>
+            <p>{{ total_productos }}</p>
+        </section>
+    </div>
+</div>
+
+<div class="cii">
+    <img class="index-admin-logo" style="height:50vh; max-height:none;" src="{% static 'images/logo.png' %}" alt="Logo KA.Sports">
+</div>
+{% endblock %}

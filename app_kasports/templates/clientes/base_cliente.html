@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>KA.Sports</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header>
+    <a href="{% url 'app_kasports:index_cliente' %}">
+        <img src="{% static 'images/l.png' %}" alt="logo">
+    </a>
+
+    <h1>KA.Sports</h1>
+
+    {% if user.is_authenticated %}
+        <div class="user-info">
+            <span>Usuario: {{ user.username }}</span>
+            {% if user.administrador %}
+                <a href="{% url 'app_kasports:index_admin' %}" class="btn-secondary" style="margin-right: 10px;">Volver a admin</a>
+            {% endif %}
+            <a href="{% url 'app_kasports:logout' %}">Cerrar sesión</a>
+        </div>
+    {% else %}
+        <a class="login-btn" href="{% url 'app_kasports:login' %}">Login</a>
+    {% endif %}
+</header>
+
+<button class="icon" id="menu-btn">&#9776;</button>
+<a href="{% url 'app_kasports:carrito' %}" class="carrito-btn">
+    <button class="icon" id="carrito-btn">🛒</button>
+</a>
+<nav class="menu" id="menu">
+    <ul>
+        <li {% if request.resolver_match.url_name == 'index_cliente' %}class="activo"{% endif %}><a href="{% url 'app_kasports:index_cliente' %}">Inicio</a></li>
+        <li class="dropdown {% if 'ropa' in request.path or 'tenis' in request.path or 'gorras' in request.path or request.resolver_match.url_name == 'productos' %}active{% endif %}" id="dropdown">
+            <a href="{% url 'app_kasports:productos' %}" class="dropdown-toggle">Productos</a>
+            <div class="dropdown-content">
+                <a href="{% url 'app_kasports:productos' %}">Todos los productos</a>
+                <a href="{% url 'app_kasports:ropa_lista' %}">Ropa</a>
+                <a href="{% url 'app_kasports:tenis_lista' %}">Tenis</a>
+                <a href="{% url 'app_kasports:gorras_lista' %}">Gorras</a>
+            </div>
+        </li>
+        <li {% if request.resolver_match.url_name == 'proveedores_lista' %}class="activo"{% endif %}><a href="{% url 'app_kasports:proveedores_lista' %}">Proveedores</a></li>
+        <li {% if request.resolver_match.url_name == 'carrito' %}class="activo"{% endif %}><a href="{% url 'app_kasports:carrito' %}">Carrito</a></li>
+        {% if user.is_authenticated and user.cliente %}
+            <li {% if request.resolver_match.url_name == 'historial_pedidos' %}class="activo"{% endif %}><a href="{% url 'app_kasports:historial_pedidos' %}">Historial</a></li>
+            <li {% if request.resolver_match.url_name == 'contacto' %}class="activo"{% endif %}><a href="{% url 'app_kasports:contacto' %}">Contacto</a></li>
+        {% else %}
+            <li><a href="#" onclick="alert('Opción solo para clientes'); return false;">Contacto</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<main class="mi">
+    {% block contenido %}{% endblock %}
+</main>
+
+<footer>
+    <a href="{% url 'app_kasports:index_cliente' %}">
+        <img src="{% static 'images/l.png' %}" alt="logo">
+    </a>
+    <h3>
+        Alumno: Osvaldo Arellano De La Cruz, CBTis 128  5ºJ<br>
+        Construye Aplicaciones Web
+    </h3>
+</footer>
+
+<script>
+const menuBtn = document.getElementById('menu-btn');
+const menu = document.getElementById('menu');
+const dropdown = document.getElementById('dropdown');
+const dropdownToggle = dropdown ? dropdown.querySelector('.dropdown-toggle') : null;
+
+if(menuBtn && menu){
+    menuBtn.addEventListener('click', ()=> menu.classList.toggle('active'));
+}
+
+if(dropdownToggle){
+    dropdownToggle.addEventListener('click', (e)=> {
+        e.preventDefault();
+        dropdown.classList.toggle('active');
+    });
+}
+</script>
+</body>
+</html>

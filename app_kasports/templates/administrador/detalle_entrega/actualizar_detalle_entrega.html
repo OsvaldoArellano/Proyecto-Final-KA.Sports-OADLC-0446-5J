@@ -1,0 +1,44 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Actualizar Detalle de Entrega</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p><strong>Venta:</strong> #{{ detalle.venta.id }} - {{ detalle.venta.cliente.user.username }}</p>
+
+    <label>Dirección de entrega:</label>
+    <textarea name="direccion_entrega" rows="3" required>{{ detalle.direccion_entrega }}</textarea>
+
+    <label>Fecha envío:</label>
+    <input type="date" name="fecha_envio" value="{{ detalle.fecha_envio|date:'Y-m-d' }}">
+
+    <label>Fecha entrega:</label>
+    <input type="date" name="fecha_entrega" value="{{ detalle.fecha_entrega|date:'Y-m-d' }}">
+
+    <label>Estado entrega:</label>
+    <select name="estado_entrega">
+        <option value="Pendiente" {% if detalle.estado_entrega == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+        <option value="En tránsito" {% if detalle.estado_entrega == 'En tránsito' %}selected{% endif %}>En tránsito</option>
+        <option value="Entregado" {% if detalle.estado_entrega == 'Entregado' %}selected{% endif %}>Entregado</option>
+        <option value="Fallido" {% if detalle.estado_entrega == 'Fallido' %}selected{% endif %}>Fallido</option>
+    </select>
+
+    <label>Evidencia actual:</label>
+    {% if detalle.imagen_evidencia %}
+        <a href="{{ detalle.imagen_evidencia.url }}" target="_blank">
+            <img src="{{ detalle.imagen_evidencia.url }}" alt="Evidencia" class="preview-img">
+        </a>
+    {% else %}
+        <span>Sin evidencia</span>
+    {% endif %}
+
+    <label>Subir / Actualizar evidencia (imagen):</label>
+    <input type="file" name="imagen_evidencia" accept="image/*">
+
+    <button type="submit" class="btn">Actualizar</button>
+    <a href="{% url 'app_kasports:ver_detalle_entrega' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

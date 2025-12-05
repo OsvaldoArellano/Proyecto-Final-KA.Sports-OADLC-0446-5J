@@ -1,0 +1,75 @@
+<nav class="menu" id="menu-admin">
+    <ul>
+        <li><a href="{% url 'app_kasports:index_admin' %}">Inicio Admin</a></li>
+
+        <li class="dropdown">
+            <a href="{% url 'app_kasports:ver_clientes' %}" class="dropdown-toggle">Clientes</a>
+            <div class="dropdown-content">
+                <a href="{% url 'app_kasports:ver_clientes' %}">Ver</a>
+                <a href="{% url 'app_kasports:agregar_cliente' %}">Agregar</a>
+            </div>
+        </li>
+
+        <li class="dropdown">
+            <a href="{% url 'app_kasports:ver_administradores' %}" class="dropdown-toggle">Administradores</a>
+            <div class="dropdown-content">
+                <a href="{% url 'app_kasports:ver_administradores' %}">Ver</a>
+                <a href="{% url 'app_kasports:agregar_administrador' %}">Agregar</a>
+            </div>
+        </li>
+
+        <li class="dropdown">
+            <a href="{% url 'app_kasports:ver_proveedores' %}" class="dropdown-toggle">Proveedores</a>
+            <div class="dropdown-content">
+                <a href="{% url 'app_kasports:ver_proveedores' %}">Ver</a>
+                <a href="{% url 'app_kasports:agregar_proveedor' %}">Agregar</a>
+            </div>
+        </li>
+
+        <li class="dropdown">
+            <a href="{% url 'app_kasports:ver_ropa' %}" class="dropdown-toggle">Ropa</a>
+            <div class="dropdown-content">
+                <a href="{% url 'app_kasports:ver_ropa' %}">Ver</a>
+                <a href="{% url 'app_kasports:agregar_ropa' %}">Agregar</a>
+            </div>
+        </li>
+
+        <li class="dropdown">
+            <a href="{% url 'app_kasports:ver_tenis' %}" class="dropdown-toggle">Tenis</a>
+            <div class="dropdown-content">
+                <a href="{% url 'app_kasports:ver_tenis' %}">Ver</a>
+                <a href="{% url 'app_kasports:agregar_tenis' %}">Agregar</a>
+            </div>
+        </li>
+
+        <li class="dropdown">
+            <a href="{% url 'app_kasports:ver_gorras' %}" class="dropdown-toggle">Gorras</a>
+            <div class="dropdown-content">
+                <a href="{% url 'app_kasports:ver_gorras' %}">Ver</a>
+                <a href="{% url 'app_kasports:agregar_gorra' %}">Agregar</a>
+            </div>
+        </li>
+
+        <li><a href="{% url 'app_kasports:ver_carritos' %}">Carritos</a></li>
+
+        <li><a href="{% url 'app_kasports:ver_ventas' %}">Ventas</a></li>
+
+        <li><a href="{% url 'app_kasports:ver_detalle_entrega' %}">Detalle Entrega</a></li>
+
+        <li><a href="{% url 'app_kasports:ver_mensajes' %}">Mensajes</a></li>
+    </ul>
+
+    <script>
+
+    document.addEventListener('DOMContentLoaded', function(){
+        const toggles = document.querySelectorAll('#menu-admin .dropdown .dropdown-toggle');
+        toggles.forEach(function(toggle){
+            toggle.addEventListener('click', function(e){
+                e.preventDefault();
+                const li = toggle.closest('.dropdown');
+                if(li) li.classList.toggle('active');
+            });
+        });
+    });
+    </script>
+</nav>

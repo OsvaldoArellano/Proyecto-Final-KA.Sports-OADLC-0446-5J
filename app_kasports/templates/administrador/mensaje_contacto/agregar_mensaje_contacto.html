@@ -1,0 +1,16 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Agregar Mensaje de Contacto</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.as_p }}
+    </div>
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'app_kasports:ver_mensajes' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

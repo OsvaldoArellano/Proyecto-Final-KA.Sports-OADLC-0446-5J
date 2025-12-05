@@ -1,0 +1,27 @@
+{% extends 'clientes/base_cliente.html' %}
+
+{% block contenido %}
+<h1>Proveedores</h1>
+<div class="cont-prov">
+    {% for p in proveedores %}
+    <section class="sec-prov">
+        <h2>{{ p.nombre }}</h2>
+        <ul class="prov-list">
+            <li>Domicilio: {{ p.direccion }}</li>
+            <li>Teléfono: {{ p.telefono }}</li>
+            <li>Correo: {{ p.correo }}</li>
+            <li>RFC: {{ p.rfc_fiscal }}</li>
+        </ul>
+        {% if p.imagen %}
+            {% if p.url_pagina_web %}
+                <a href="{{ p.url_pagina_web }}" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
+                </a>
+            {% else %}
+                <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
+            {% endif %}
+        {% endif %}
+    </section>
+    {% endfor %}
+</div>
+{% endblock %}

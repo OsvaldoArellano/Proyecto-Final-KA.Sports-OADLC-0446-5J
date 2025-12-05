@@ -1,0 +1,76 @@
+{% extends 'administrador/base.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<div class="content-title">
+    <h2>Carritos</h2>
+</div>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="cliente" {% if campo == 'cliente' %}selected{% endif %}>Cliente</option>
+        <option value="estado" {% if campo == 'estado' %}selected{% endif %}>Estado</option>
+        <option value="id" {% if campo == 'id' %}selected{% endif %}>ID</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda...">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<table class="table-fixed">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Fecha creación</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in page_obj %}
+        <tr>
+            <td>{{ c.id }}</td>
+            <td>
+                {% if campo == 'cliente' and query %}
+                    {{ c.cliente.user.username|highlight:query|safe }}
+                {% else %}
+                    {{ c.cliente.user.username }}
+                {% endif %}
+            </td>
+            <td>{{ c.fecha_creacion|date:"d/m/Y H:i" }}</td>
+            <td>{{ c.total }} MXN</td>
+            <td>
+                {% if campo == 'estado' and query %}
+                    {{ c.estado|highlight:query|safe }}
+                {% else %}
+                    {{ c.estado }}
+                {% endif %}
+            </td>
+            <td class="acciones">
+                <a href="{% url 'app_kasports:borrar_carrito_admin' c.id %}" class="btn btn-danger">Borrar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No hay carritos registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

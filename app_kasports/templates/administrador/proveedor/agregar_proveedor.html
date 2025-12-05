@@ -1,0 +1,34 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Agregar Proveedor</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Nombre:</label>
+    <input type="text" name="nombre" required>
+
+    <label>Dirección:</label>
+    <textarea name="direccion" rows="3" required></textarea>
+
+    <label>Teléfono:</label>
+    <input type="text" name="telefono" required>
+
+    <label>Correo:</label>
+    <input type="email" name="correo" required>
+
+    <label>RFC Fiscal:</label>
+    <input type="text" name="rfc_fiscal" required>
+
+    <label>Imagen (logo):</label>
+    <input type="file" name="imagen" accept="image/*">
+
+    <label>Página web:</label>
+    <input type="url" name="url_pagina_web" placeholder="https://ejemplo.com">
+
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'app_kasports:ver_proveedores' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

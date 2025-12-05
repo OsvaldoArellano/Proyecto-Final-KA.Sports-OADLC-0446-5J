@@ -1,0 +1,41 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Actualizar Proveedor</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Nombre:</label>
+    <input type="text" name="nombre" value="{{ proveedor.nombre }}" required>
+
+    <label>Dirección:</label>
+    <textarea name="direccion" rows="3" required>{{ proveedor.direccion }}</textarea>
+
+    <label>Teléfono:</label>
+    <input type="text" name="telefono" value="{{ proveedor.telefono }}" required>
+
+    <label>Correo:</label>
+    <input type="email" name="correo" value="{{ proveedor.correo }}" required>
+
+    <label>RFC Fiscal:</label>
+    <input type="text" name="rfc_fiscal" value="{{ proveedor.rfc_fiscal }}" required>
+
+    <label>Imagen actual:</label><br>
+    {% if proveedor.imagen %}
+        <img src="{{ proveedor.imagen.url }}" alt="{{ proveedor.nombre }}" class="preview-img">
+    {% else %}
+        <span>Sin imagen</span>
+    {% endif %}
+    <br><br>
+    <label>Actualizar imagen (opcional):</label>
+    <input type="file" name="imagen" accept="image/*">
+
+    <label>Página web:</label>
+    <input type="url" name="url_pagina_web" value="{{ proveedor.url_pagina_web }}" placeholder="https://ejemplo.com">
+
+    <button type="submit" class="btn">Actualizar</button>
+    <a href="{% url 'app_kasports:ver_proveedores' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'clientes/base_cliente.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+
+<h1>Historial de Pedidos</h1>
+
+{% if ventas %}
+<div class="historial-container">
+    {% for v in ventas %}
+    <article class="receipt">
+        <header class="receipt-header">
+            <div class="store">KA SPORTS</div>
+            <div class="receipt-meta">
+                <div><strong>Venta:</strong> #{{ v.id }}</div>
+                <div><strong>Fecha:</strong> {{ v.fecha_venta|date:"d/m/Y H:i" }}</div>
+            </div>
+        </header>
+
+        <section class="receipt-body">
+            <div class="client-line">
+                <strong>Cliente:</strong> {{ v.cliente.user.get_full_name }} ({{ v.cliente.user.username }})
+            </div>
+
+            <table class="receipt-products">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th class="th-unit">Precio unit.</th>
+                        <th class="th-qty">Cant.</th>
+                        <th class="th-sub">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detalle in v.carrito.detalles.all %}
+                    <tr>
+                        <td class="prod-name">
+                            {% if detalle.ropa %}
+                                {{ detalle.ropa }}
+                            {% elif detalle.tenis %}
+                                {{ detalle.tenis }}
+                            {% else %}
+                                {{ detalle.gorra }}
+                            {% endif %}
+                        </td>
+                        <td class="prod-unit">{{ detalle.unit_price|currency }}</td>
+                        <td class="prod-qty">{{ detalle.cantidad }}</td>
+                        <td class="prod-sub">{{ detalle.subtotal|currency }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="receipt-totals">
+                <div>Subtotal: <strong>{{ v.subtotal|currency }}</strong></div>
+                {% if v.descuento and v.descuento > 0 %}
+                <div>Descuento: <strong style="color:green;">-{{ v.descuento|currency }}</strong></div>
+                {% endif %}
+                <div>Impuesto: <strong>{{ v.impuesto|currency }}</strong></div>
+                <div>Envío: <strong>{{ v.costo_envio|currency }}</strong></div>
+                <div class="grand-total">Total: <strong>{{ v.total|currency }}</strong></div>
+            </div>
+
+            <div class="receipt-delivery">
+                <strong>Método pago:</strong> {{ v.metodo_pago }}<br>
+                <strong>Estado venta:</strong> {{ v.estado }}<br>
+                {% if v.detalle_entrega %}
+                    <strong>Estado entrega:</strong> {{ v.detalle_entrega.estado_entrega }}<br>
+                    {% if v.detalle_entrega.fecha_entrega %}
+                        <strong>Fecha entrega:</strong> {{ v.detalle_entrega.fecha_entrega|date:"d/m/Y" }}<br>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </section>
+
+        <footer class="receipt-footer">
+            <a href="{% url 'app_kasports:detalle_entrega' v.id %}" class="btn">Ver entrega</a>
+        </footer>
+    </article>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn">« Anterior</a>
+    {% endif %}
+    <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn">Siguiente »</a>
+    {% endif %}
+</div>
+{% else %}
+<p>No tienes pedidos registrados.</p>
+{% endif %}
+
+{% endblock %}

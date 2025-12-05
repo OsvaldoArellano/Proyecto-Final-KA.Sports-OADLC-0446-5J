@@ -1,0 +1,51 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Agregar Ropa</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Proveedor:</label>
+    <select name="proveedor_id" required>
+        {% for p in proveedores %}
+        <option value="{{ p.id }}">{{ p.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Modelo:</label>
+    <input type="text" name="modelo" required>
+
+    <label>Color:</label>
+    <input type="text" name="color" required>
+
+    <label>Estilo:</label>
+    <select name="estilo" required>
+        <option value="Casual">Casual</option>
+        <option value="Deportivo">Deportivo</option>
+    </select>
+
+    <label>Género:</label>
+    <select name="genero" required>
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+        <option value="Unisex">Unisex</option>
+    </select>
+
+    <label>Tallas disponibles (separadas por comas):</label>
+    <input type="text" name="tallas_disponibles" placeholder="Ej: XS,S,M,L,XL">
+
+    <label>Precio (MXN):</label>
+    <input type="number" name="precio" step="0.01" min="0.01" required>
+
+    <label>Stock:</label>
+    <input type="number" name="stock" min="0" required>
+
+    <label>Imagen:</label>
+    <input type="file" name="imagen" accept="image/*">
+
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'app_kasports:ver_ropa' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

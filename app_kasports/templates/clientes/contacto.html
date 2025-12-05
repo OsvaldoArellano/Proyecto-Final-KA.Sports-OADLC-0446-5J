@@ -1,0 +1,22 @@
+{% extends 'clientes/base_cliente.html' %}
+
+{% block contenido %}
+<main class="contact">
+    <h1>📞 Contáctanos – KA.Sports</h1>
+    <h3>¿Tienes dudas, sugerencias o quieres más información sobre nuestros productos?
+    ¡Estamos aquí para ayudarte! Escríbenos y te responderemos lo antes posible.</h3>
+    <div class="info">
+        <ul>
+        <li>📧 Correo: contacto@kasports.com</li>
+        <li>☎️ Teléfono: +52 55 1234 5678</li>
+        </ul>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="nombre" placeholder="Nombre Completo" required>
+        <input type="email" name="email" placeholder="Correo Electrónico" required>
+        <textarea name="mensaje" rows="5" placeholder="Escribe tu mensaje..." required></textarea>
+        <button type="submit">Enviar Mensaje</button>
+    </form>
+</main>
+{% endblock %}

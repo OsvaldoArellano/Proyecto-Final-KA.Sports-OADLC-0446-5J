@@ -1,0 +1,18 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Borrar Administrador</h2>
+
+<p>
+    ¿Estás seguro de que deseas eliminar al administrador
+    <strong>{{ admin_obj.user.username }}</strong> ({{ admin_obj.nombre }} {{ admin_obj.apellido }})?
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, borrar</button>
+    <a href="{% url 'app_kasports:ver_administradores' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

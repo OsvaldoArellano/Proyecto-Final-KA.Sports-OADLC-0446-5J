@@ -1,0 +1,155 @@
+{% extends 'clientes/base_cliente.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<h1>Carrito de Compras</h1>
+
+{% if detalles %}
+<table class="cart-table">
+    <thead>
+        <tr>
+            <th>Imagen</th>
+            <th>Producto</th>
+            <th>Talla</th>
+            <th>Tipo</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in detalles %}
+        {% with prod=d.ropa|default_if_none:d.tenis|default_if_none:d.gorra %}
+        <tr class="cart-row">
+            <td class="prod-img">
+                {% if prod.imagen %}
+                    <img src="{{ prod.imagen.url }}" alt="{{ prod.modelo }}" />
+                {% else %}
+                    <div class="img-placeholder">Sin imagen</div>
+                {% endif %}
+            </td>
+            <td class="prod-name">{{ prod.modelo }}</td>
+            {% with prod.tallas_disponibles|split_by as tall_list %}
+            <td class="prod-size">
+                {% if d.talla_seleccionada %}
+                    {{ d.talla_seleccionada }}
+                {% elif tall_list %}
+                    {{ tall_list.0 }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            {% endwith %}
+            <td>
+                {% if d.ropa %}Ropa{% elif d.tenis %}Tenis{% else %}Gorra{% endif %}
+            </td>
+            <td>
+                <form method="post" action="{% url 'app_kasports:actualizar_carrito' d.id %}" class="qty-form">
+                    {% csrf_token %}
+                    <input type="number" name="cantidad" value="{{ d.cantidad }}" min="1">
+                    <button type="submit" class="btn btn-update">Actualizar</button>
+                </form>
+            </td>
+            <td>{{ prod.precio|currency }}</td>
+            <td>{{ d.subtotal|currency }}</td>
+            <td>
+                <form method="post" action="{% url 'app_kasports:eliminar_carrito' d.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endwith %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Resumen</h3>
+<div class="order-summary">
+    <div class="summary-row">
+        <div>Subtotal</div>
+    <div class="summary-value">{{ subtotal|currency }}</div>
+    </div>
+    {% if descuento and descuento > 0 %}
+    <div class="summary-row">
+        <div>Descuento</div>
+    <div class="summary-value">-{{ descuento|currency }}</div>
+    </div>
+    <div class="summary-row">
+        <div>Subtotal con descuento</div>
+    <div class="summary-value">{{ subtotal_con_descuento|currency }}</div>
+    </div>
+    {% endif %}
+    <div class="summary-row">
+        <div>IVA (8%)</div>
+    <div class="summary-value">{{ impuesto|currency }}</div>
+    </div>
+    <div class="summary-row">
+        <div>Envío</div>
+    <div class="summary-value">{{ costo_envio|currency }}</div>
+    </div>
+    <div class="summary-row summary-total">
+        <div>Total</div>
+    <div class="summary-value">{{ total|currency }}</div>
+    </div>
+</div>
+
+<h3>Confirmar Pedido</h3>
+<form method="post" action="{% url 'app_kasports:confirmar_pedido' %}" class="confirm-form">
+    {% csrf_token %}
+    <label>Método de pago:</label>
+    <div class="payment-methods">
+        <label class="pm-card">
+            <input type="radio" name="metodo_pago" value="Tarjeta de Crédito" checked>
+            <span class="pm-icon">💳</span>
+            <span class="pm-label">Tarjeta de Crédito</span>
+        </label>
+        <label class="pm-card">
+            <input type="radio" name="metodo_pago" value="Tarjeta de Débito">
+            <span class="pm-icon">💳</span>
+            <span class="pm-label">Tarjeta de Débito</span>
+        </label>
+        <label class="pm-card">
+            <input type="radio" name="metodo_pago" value="PayPal">
+            <span class="pm-icon">🅿️</span>
+            <span class="pm-label">PayPal</span>
+        </label>
+    </div>
+
+    <div class="payment-data-section" style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+        <h4 style="margin-top: 0;">Datos de Pago</h4>
+        
+        <div style="margin-bottom: 12px;">
+            <label for="titular">Nombre del Titular:</label><br>
+            <input type="text" id="titular" name="titular_pago" placeholder="Nombre completo" required style="width: 99%; padding: 8px; border: 1px solid #ccc; border-radius: 3px;">
+        </div>
+
+        <div style="margin-bottom: 12px;">
+            <label for="numero_tarjeta">Número de Tarjeta:</label><br>
+            <input type="text" id="numero_tarjeta" name="numero_tarjeta" placeholder="0000 0000 0000 0000" maxlength="19" required style="width: 99%; padding: 8px; border: 1px solid #ccc; border-radius: 3px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div>
+                <label for="expiracion">Expiración (MM/AA):</label><br>
+                <input type="text" id="expiracion" name="expiracion" placeholder="MM/AA" maxlength="5" required style="width: 95%; padding: 8px; margin-top: 2px; border: 1px solid #ccc; border-radius: 3px;">
+            </div>
+            <div>
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" name="cvv" placeholder="000" maxlength="3" required style="width: 95%; padding: 8px; margin-top: 2px; border: 1px solid #ccc; border-radius: 3px;">
+            </div>
+        </div>
+    </div>
+
+    <label>Dirección de entrega:</label>
+    <textarea name="direccion_entrega" rows="3" style="width: 99%; ">{{ request.user.cliente.direccion }}</textarea>
+
+    <div style="margin-top:12px;">
+        <button type="submit" class="btn btn-confirm">Confirmar pedido</button>
+    </div>
+</form>
+{% else %}
+<p>Tu carrito está vacío.</p>
+{% endif %}
+{% endblock %}

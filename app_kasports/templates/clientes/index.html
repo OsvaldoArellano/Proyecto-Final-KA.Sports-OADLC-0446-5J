@@ -1,0 +1,61 @@
+{% extends 'clientes/base_cliente.html' %}
+{% load static currency_filters %}
+
+{% block contenido %}
+<h1>KA.Sports</h1>
+<p>En KA.Sports creemos que el deporte no solo es una actividad, sino un estilo de vida. Somos una tienda dedicada a ofrecerte los mejores artículos deportivos, ropa, calzado para que alcances tu máximo rendimiento en cada entrenamiento, partido o aventura.</p>
+<p>Contamos con una amplia variedad de marcas reconocidas y productos de alta calidad, pensados tanto para atletas profesionales como para quienes disfrutan mantenerse activos día a día. En KA.Sports encontrarás todo lo que necesitas para vivir tu pasión por el deporte con comodidad, estilo y confianza.</p>
+<p>Nuestro compromiso es impulsarte a superar tus límites y acompañarte en cada logro. 
+KA.Sports.</p>
+<h2>¡Tu energía, nuestro impulso!</h2>
+<div class="cii">
+    <img src="{% static 'images/logo.png' %}" alt="Logo">
+    <img src="{% static 'images/dep.png' %}" alt="Deporte">
+</div>
+ 
+<h2>Productos destacados</h2>
+<div class="featured-row" style="display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-start;margin:16px 0;">
+    <div class="featured-item" style="flex:1;max-width:300px;text-align:center;">
+        {% if featured_ropa %}
+            <a href="{% url 'app_kasports:ropa_lista' %}">
+                {% if featured_ropa.imagen %}
+                    <img src="{{ featured_ropa.imagen.url }}" alt="{{ featured_ropa.modelo }}" style="width:100%;height:180px;object-fit:cover;border-radius:8px;border:1px solid #238F96;">
+                {% endif %}
+                <div style="margin-top:8px;font-weight:700;">{{ featured_ropa.modelo }}</div>
+                <div style="color:rgb(35,143,150);font-weight:600;">{{ featured_ropa.precio|currency }}</div>
+            </a>
+        {% else %}
+            <div>No hay ropa disponible</div>
+        {% endif %}
+    </div>
+
+    <div class="featured-item" style="flex:1;max-width:300px;text-align:center;">
+        {% if featured_tenis %}
+            <a href="{% url 'app_kasports:tenis_lista' %}">
+                {% if featured_tenis.imagen %}
+                    <img src="{{ featured_tenis.imagen.url }}" alt="{{ featured_tenis.modelo }}" style="width:100%;height:180px;object-fit:cover;border-radius:8px;border:1px solid #238F96;">
+                {% endif %}
+                <div style="margin-top:8px;font-weight:700;">{{ featured_tenis.modelo }}</div>
+                <div style="color:rgb(35,143,150);font-weight:600;">{{ featured_tenis.precio|currency }}</div>
+            </a>
+        {% else %}
+            <div>No hay tenis disponible</div>
+        {% endif %}
+    </div>
+
+    <div class="featured-item" style="flex:1;max-width:300px;text-align:center;">
+        {% if featured_gorra %}
+            <a href="{% url 'app_kasports:gorras_lista' %}">
+                {% if featured_gorra.imagen %}
+                    <img src="{{ featured_gorra.imagen.url }}" alt="{{ featured_gorra.modelo }}" style="width:100%;height:180px;object-fit:cover;border-radius:8px;border:1px solid #238F96;">
+                {% endif %}
+                <div style="margin-top:8px;font-weight:700;">{{ featured_gorra.modelo }}</div>
+                <div style="color:rgb(35,143,150);font-weight:600;">{{ featured_gorra.precio|currency }}</div>
+            </a>
+        {% else %}
+            <div>No hay gorras disponible</div>
+        {% endif %}
+    </div>
+</div>
+<center><a href="{% url 'app_kasports:productos' %}" class="btn-mas">Ver Productos</a></center>
+{% endblock %}

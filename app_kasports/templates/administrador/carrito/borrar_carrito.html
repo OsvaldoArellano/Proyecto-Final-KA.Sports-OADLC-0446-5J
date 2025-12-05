@@ -1,0 +1,14 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Borrar Carrito</h2>
+<p>¿Estás seguro de que deseas eliminar el carrito <strong>#{{ carrito.id }}</strong> del cliente {{ carrito.cliente.user.username }}?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, borrar</button>
+    <a href="{% url 'app_kasports:ver_carritos' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

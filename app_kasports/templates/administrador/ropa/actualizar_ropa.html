@@ -1,0 +1,56 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Actualizar Ropa</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Proveedor:</label>
+    <select name="proveedor_id" required>
+        {% for p in proveedores %}
+        <option value="{{ p.id }}" {% if p.id == ropa.proveedor.id %}selected{% endif %}>{{ p.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Modelo:</label>
+    <input type="text" name="modelo" value="{{ ropa.modelo }}" required>
+
+    <label>Color:</label>
+    <input type="text" name="color" value="{{ ropa.color }}" required>
+
+    <label>Estilo:</label>
+    <select name="estilo" required>
+        <option value="Casual" {% if ropa.estilo == 'Casual' %}selected{% endif %}>Casual</option>
+        <option value="Deportivo" {% if ropa.estilo == 'Deportivo' %}selected{% endif %}>Deportivo</option>
+    </select>
+
+    <label>Género:</label>
+    <select name="genero" required>
+        <option value="Masculino" {% if ropa.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
+        <option value="Femenino" {% if ropa.genero == 'Femenino' %}selected{% endif %}>Femenino</option>
+        <option value="Unisex" {% if ropa.genero == 'Unisex' %}selected{% endif %}>Unisex</option>
+    </select>
+
+    <label>Tallas disponibles (separadas por comas):</label>
+    <input type="text" name="tallas_disponibles" value="{{ ropa.tallas_disponibles }}" placeholder="Ej: XS,S,M,L,XL">
+
+    <label>Precio (MXN):</label>
+    <input type="number" name="precio" step="0.01" min="0.01" value="{{ ropa.precio }}" required>
+
+    <label>Stock:</label>
+    <input type="number" name="stock" min="0" value="{{ ropa.stock }}" required>
+
+    <label>Imagen actual:</label><br>
+    {% if ropa.imagen %}
+        <img src="{{ ropa.imagen.url }}" alt="{{ ropa.modelo }}" class="preview-img">
+    {% else %}-{% endif %}
+    <br><br>
+    <label>Actualizar imagen (opcional):</label>
+    <input type="file" name="imagen" accept="image/*">
+
+    <button type="submit" class="btn">Actualizar</button>
+    <a href="{% url 'app_kasports:ver_ropa' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

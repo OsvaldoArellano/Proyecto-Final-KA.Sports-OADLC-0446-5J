@@ -1,0 +1,81 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Actualizar Gorra</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Proveedor:</label>
+    <select name="proveedor_id" required>
+        {% for p in proveedores %}
+        <option value="{{ p.id }}" {% if p.id == gorra.proveedor.id %}selected{% endif %}>{{ p.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Modelo:</label>
+    <input type="text" name="modelo" value="{{ gorra.modelo }}" required>
+
+    <label>Colección:</label>
+    <input type="text" name="coleccion" value="{{ gorra.coleccion }}" required>
+
+    <label>Silueta:</label>
+    <select name="silueta" required>
+        <option value="59Fifty" {% if gorra.silueta == '59Fifty' %}selected{% endif %}>59Fifty</option>
+        <option value="9Fifty" {% if gorra.silueta == '9Fifty' %}selected{% endif %}>9Fifty</option>
+        <option value="39Thirty" {% if gorra.silueta == '39Thirty' %}selected{% endif %}>39Thirty</option>
+        <option value="9Forty" {% if gorra.silueta == '9Forty' %}selected{% endif %}>9Forty</option>
+        <option value="9Twenty" {% if gorra.silueta == '9Twenty' %}selected{% endif %}>9Twenty</option>
+        <option value="Visor" {% if gorra.silueta == 'Visor' %}selected{% endif %}>Visor</option>
+        <option value="Gorro" {% if gorra.silueta == 'Gorro' %}selected{% endif %}>Gorro</option>
+        <option value="-" {% if gorra.silueta == '-' %}selected{% endif %}>-</option>
+    </select>
+
+    <label>Visera:</label>
+    <select name="visera" required>
+        <option value="Curva" {% if gorra.visera == 'Curva' %}selected{% endif %}>Curva</option>
+        <option value="Plana" {% if gorra.visera == 'Plana' %}selected{% endif %}>Plana</option>
+        <option value="-" {% if gorra.visera == '-' %}selected{% endif %}>-</option>
+    </select>
+
+    <label>Broche:</label>
+    <select name="broche" required>
+        <option value="Velcro" {% if gorra.broche == 'Velcro' %}selected{% endif %}>Velcro</option>
+        <option value="Strapback" {% if gorra.broche == 'Strapback' %}selected{% endif %}>Strapback</option>
+        <option value="Snapback" {% if gorra.broche == 'Snapback' %}selected{% endif %}>Snapback</option>
+        <option value="Cerrada" {% if gorra.broche == 'Cerrada' %}selected{% endif %}>Cerrada</option>
+        <option value="-" {% if gorra.broche == '-' %}selected{% endif %}>-</option>
+    </select>
+
+    <label>Color:</label>
+    <input type="text" name="color" value="{{ gorra.color }}" required>
+
+    <label>Género:</label>
+    <select name="genero" required>
+        <option value="Masculino" {% if gorra.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
+        <option value="Femenino" {% if gorra.genero == 'Femenino' %}selected{% endif %}>Femenino</option>
+        <option value="Unisex" {% if gorra.genero == 'Unisex' %}selected{% endif %}>Unisex</option>
+    </select>
+
+    <label>Tallas disponibles (separadas por comas):</label>
+    <input type="text" name="tallas_disponibles" value="{{ gorra.tallas_disponibles }}" placeholder="Ej: Unitalla,S,M,L">
+
+    <label>Precio (MXN):</label>
+    <input type="number" name="precio" step="0.01" min="0.01" value="{{ gorra.precio }}" required>
+
+    <label>Stock:</label>
+    <input type="number" name="stock" min="0" value="{{ gorra.stock }}" required>
+
+    <label>Imagen actual:</label><br>
+    {% if gorra.imagen %}
+        <img src="{{ gorra.imagen.url }}" alt="{{ gorra.modelo }}" class="preview-img">
+    {% else %}-{% endif %}
+    <br><br>
+    <label>Actualizar imagen (opcional):</label>
+    <input type="file" name="imagen" accept="image/*">
+
+    <button type="submit" class="btn">Actualizar</button>
+    <a href="{% url 'app_kasports:ver_gorras' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

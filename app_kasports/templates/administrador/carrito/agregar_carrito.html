@@ -1,0 +1,33 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Agregar Carrito (Admin)</h2>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label>Cliente:</label>
+        <select name="cliente_id" required>
+            {% for cli in clientes %}
+            <option value="{{ cli.id }}">{{ cli.user.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Estado:</label>
+        <select name="estado">
+            <option value="Activo">Activo</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Completado">Completado</option>
+            <option value="Cancelado">Cancelado</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'app_kasports:ver_carritos' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

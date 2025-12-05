@@ -1,0 +1,113 @@
+{% extends 'administrador/base.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<div class="content-title">
+    <h2>Proveedores</h2>
+    <a href="{% url 'app_kasports:agregar_proveedor' %}" class="btn">Agregar Proveedor</a>
+</div>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="nombre" {% if campo == 'nombre' %}selected{% endif %}>Nombre</option>
+        <option value="correo" {% if campo == 'correo' %}selected{% endif %}>Correo</option>
+        <option value="telefono" {% if campo == 'telefono' %}selected{% endif %}>Teléfono</option>
+        <option value="rfc" {% if campo == 'rfc' %}selected{% endif %}>RFC</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda...">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<table class="table-fixed-prove">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>RFC</th>
+            <th>Imagen</th>
+            <th>Página web</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in page_obj %}
+        <tr>
+            <td>{{ p.id }}</td>
+            <td>
+                {% if campo == 'nombre' and query %}
+                    {{ p.nombre|highlight:query|safe }}
+                {% else %}
+                    {{ p.nombre }}
+                {% endif %}
+            </td>
+            <td>{{ p.direccion }}</td>
+            <td>
+                {% if campo == 'telefono' and query %}
+                    {{ p.telefono|highlight:query|safe }}
+                {% else %}
+                    {{ p.telefono }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'correo' and query %}
+                    {{ p.correo|highlight:query|safe }}
+                {% else %}
+                    {{ p.correo }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'rfc' and query %}
+                    {{ p.rfc_fiscal|highlight:query|safe }}
+                {% else %}
+                    {{ p.rfc_fiscal }}
+                {% endif %}
+            </td>
+            <td>
+                {% if p.imagen %}
+                    {% if p.url_pagina_web %}
+                        <a href="{{ p.url_pagina_web }}" target="_blank">
+                            <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}" style="height:50px;border-radius:5px;">
+                        </a>
+                    {% else %}
+                        <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}" style="height:50px;border-radius:5px;">
+                    {% endif %}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                {% if p.url_pagina_web %}
+                    <a href="{{ p.url_pagina_web }}" target="_blank">{{ p.url_pagina_web }}</a>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td class="acciones">
+                <a href="{% url 'app_kasports:actualizar_proveedor' p.id %}" class="btn btn-edit">Editar</a>
+                <a href="{% url 'app_kasports:borrar_proveedor' p.id %}" class="btn btn-danger">Borrar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9">No hay proveedores registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

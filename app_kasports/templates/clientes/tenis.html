@@ -1,0 +1,151 @@
+{% extends 'clientes/base_cliente.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<h1>Tenis</h1>
+
+{# Styles for size badges are centralized in static/css/style.css #}
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="modelo" {% if campo == 'modelo' %}selected{% endif %}>Modelo</option>
+        <option value="color" {% if campo == 'color' %}selected{% endif %}>Color</option>
+        <option value="estilo" {% if campo == 'estilo' %}selected{% endif %}>Estilo</option>
+        <option value="genero" {% if campo == 'genero' %}selected{% endif %}>Género</option>
+        <option value="talla" {% if campo == 'talla' %}selected{% endif %}>Talla</option>
+        <option value="proveedor" {% if campo == 'proveedor' %}selected{% endif %}>Proveedor</option>
+    </select>
+
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda...">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<div style="text-align:center; margin-top: 10px; margin-bottom: 20px;">
+    <button class="btn" onclick="mostrarGuiaTallasTenis()">Guía de tallas de tenis</button>
+</div>
+<div id="guia-tallas-tenis-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:24px 18px; border-radius:10px; max-width:400px; margin:auto; position:relative; top:10vh; max-height:70vh; overflow-y:auto;">
+        <h3>Guía de tallas de tenis</h3>
+        <p>Consulta la siguiente tabla para elegir la talla adecuada de tus tenis. Si tienes dudas, mide la longitud de tu pie y compárala con la talla recomendada.</p>
+        <table style="width:100%; max-width:400px; border-collapse:collapse;">
+            <tr><td>18.0</td><td>11C</td><td>29</td></tr>
+            <tr><td>18.5</td><td>11.5C</td><td>29.5</td></tr>
+            <tr><td>19.0</td><td>12C</td><td>30</td></tr>
+            <tr><td>19.5</td><td>12.5C</td><td>31</td></tr>
+            <tr><td>20.0</td><td>13C</td><td>31.5</td></tr>
+            <tr><td>20.5</td><td>13.5C</td><td>32</td></tr>
+            <tr><td>21.0</td><td>1.0</td><td>33</td></tr>
+            <tr><td>21.5</td><td>2.0</td><td>34</td></tr>
+            <tr><td>22.0</td><td>3.0</td><td>35</td></tr>
+            <tr><td>22.5</td><td>4.0</td><td>36</td></tr>
+            <tr><td>23.0</td><td>5.0</td><td>37.5</td></tr>
+            <tr><td>23.5</td><td>5.5</td><td>38</td></tr>
+            <tr><td>24.0</td><td>6.0</td><td>38.5</td></tr>
+            <tr><td>24.5</td><td>6.5</td><td>39</td></tr>
+            <tr><td>25.0</td><td>7.0</td><td>40</td></tr>
+            <tr><td>25.5</td><td>7.5</td><td>40.5</td></tr>
+            <tr><td>26.0</td><td>8.0</td><td>41</td></tr>
+            <tr><td>26.5</td><td>8.5</td><td>42</td></tr>
+            <tr><td>27.0</td><td>9.0</td><td>42.5</td></tr>
+            <tr><td>27.5</td><td>9.5</td><td>43</td></tr>
+            <tr><td>28.0</td><td>10.0</td><td>44</td></tr>
+            <tr><td>28.5</td><td>10.5</td><td>44.5</td></tr>
+            <tr><td>29.0</td><td>11.0</td><td>45</td></tr>
+            <tr><td>29.5</td><td>11.5</td><td>45.5</td></tr>
+            <tr><td>30.0</td><td>12.0</td><td>46</td></tr>
+            <tr><td>30.5</td><td>12.5</td><td>47</td></tr>
+            <tr><td>31.0</td><td>13.0</td><td>47.5</td></tr>
+        </table>
+        <button class="btn btn-danger" onclick="cerrarGuiaTallasTenis()" style="margin-top:10px;">Cerrar</button>
+    </div>
+</div>
+<script>
+function mostrarGuiaTallasTenis() {
+    document.getElementById('guia-tallas-tenis-modal').style.display = 'flex';
+}
+function cerrarGuiaTallasTenis() {
+    document.getElementById('guia-tallas-tenis-modal').style.display = 'none';
+}
+</script>
+
+{% if talla_error %}
+    <p style="color:red;">{{ talla_error }}</p>
+{% endif %}
+
+<div class="prodt">
+    {% for t in page_obj %}
+    <section class="secp">
+        <h3>{% if campo == 'modelo' %}{{ t.modelo|highlight:query|safe }}{% else %}{{ t.modelo }}{% endif %}</h3>
+
+        {% if t.imagen %}
+            <img src="{{ t.imagen.url }}" alt="{{ t.modelo }}">
+        {% endif %}
+
+        <ul>
+            <li>Marca: {% if campo == 'proveedor' %}{{ t.proveedor.nombre|highlight:query|safe }}{% else %}{{ t.proveedor.nombre }}{% endif %}</li>
+            <li>Modelo: {% if campo == 'modelo' %}{{ t.modelo|highlight:query|safe }}{% else %}{{ t.modelo }}{% endif %}</li>
+            <li>Color: {% if campo == 'color' %}{{ t.color|highlight:query|safe }}{% else %}{{ t.color }}{% endif %}</li>
+            <li>Estilo: {% if campo == 'estilo' %}{{ t.estilo|highlight:query|safe }}{% else %}{{ t.estilo }}{% endif %}</li>
+            <li>Genero: {% if campo == 'genero' %}{{ t.genero|highlight:query|safe }}{% else %}{{ t.genero }}{% endif %}</li>
+            <li>Tallas disponibles:
+                {% if t.tallas_disponibles %}
+                    <div class="size-list">
+                        {% for s in t.tallas_disponibles|split_by %}
+                            <span class="size-badge">{{ s }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    -
+                {% endif %}
+            </li>
+            <li>Precio: {{ t.precio }} MXN</li>
+            <li>Stock: {{ t.stock }}</li>
+        </ul>
+
+        {% if user.is_authenticated and user.cliente %}
+            <form method="post" action="{% url 'app_kasports:agregar_carrito' 'tenis' t.id %}">
+                {% csrf_token %}
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <label for="talla_{{ t.id }}" style="margin-bottom:0;">Talla:</label>
+                    {% if t.tallas_disponibles %}
+                        <select name="talla" id="talla_{{ t.id }}" class="size-select" required style="margin-bottom:0;">
+                            {% for s in t.tallas_disponibles|split_by %}
+                                <option value="{{ s }}">{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <input type="text" name="talla" id="talla_{{ t.id }}" value="" required style="margin-bottom:0;">
+                    {% endif %}
+                    <label for="cantidad_{{ t.id }}" style="margin-bottom:0;">Cantidad:</label>
+                    <input type="number" name="cantidad" id="cantidad_{{ t.id }}" min="1" max="{{ t.stock }}" value="1" style="width:60px; margin-bottom:0;" required>
+                </div>
+                <button type="submit" class="btn" style="margin-top:8px;">Agregar al carrito</button>
+            </form>
+        {% elif user.is_authenticated and user.administrador %}
+            <p style="color:red;">Opción solo para clientes</p>
+        {% else %}
+            <p style="color:red;">Inicia sesión o regístrate</p>
+        {% endif %}
+    </section>
+    {% empty %}
+    <p>No hay productos disponibles.</p>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

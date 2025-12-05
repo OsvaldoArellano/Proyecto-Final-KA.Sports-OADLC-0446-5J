@@ -1,0 +1,56 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Actualizar Tenis</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Proveedor:</label>
+    <select name="proveedor_id" required>
+        {% for p in proveedores %}
+        <option value="{{ p.id }}" {% if p.id == tenis.proveedor.id %}selected{% endif %}>{{ p.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Modelo:</label>
+    <input type="text" name="modelo" value="{{ tenis.modelo }}" required>
+
+    <label>Estilo:</label>
+    <select name="estilo" required>
+        <option value="Casual" {% if tenis.estilo == 'Casual' %}selected{% endif %}>Casual</option>
+        <option value="Deportivo" {% if tenis.estilo == 'Deportivo' %}selected{% endif %}>Deportivo</option>
+    </select>
+
+    <label>Color:</label>
+    <input type="text" name="color" value="{{ tenis.color }}" required>
+
+    <label>Género:</label>
+    <select name="genero" required>
+        <option value="Masculino" {% if tenis.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
+        <option value="Femenino" {% if tenis.genero == 'Femenino' %}selected{% endif %}>Femenino</option>
+        <option value="Unisex" {% if tenis.genero == 'Unisex' %}selected{% endif %}>Unisex</option>
+    </select>
+
+    <label>Tallas disponibles (separadas por comas):</label>
+    <input type="text" name="tallas_disponibles" value="{{ tenis.tallas_disponibles }}" placeholder="Ej: 26,26.5,27,27.5">
+
+    <label>Precio (MXN):</label>
+    <input type="number" name="precio" step="0.01" min="0.01" value="{{ tenis.precio }}" required>
+
+    <label>Stock:</label>
+    <input type="number" name="stock" min="0" value="{{ tenis.stock }}" required>
+
+    <label>Imagen actual:</label><br>
+    {% if tenis.imagen %}
+        <img src="{{ tenis.imagen.url }}" alt="{{ tenis.modelo }}" class="preview-img">
+    {% else %}-{% endif %}
+    <br><br>
+    <label>Actualizar imagen (opcional):</label>
+    <input type="file" name="imagen" accept="image/*">
+
+    <button type="submit" class="btn">Actualizar</button>
+    <a href="{% url 'app_kasports:ver_tenis' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

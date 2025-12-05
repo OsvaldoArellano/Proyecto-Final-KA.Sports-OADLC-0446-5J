@@ -1,0 +1,111 @@
+{% extends 'administrador/base.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<div class="content-title">
+    <h2>Tenis</h2>
+    <a href="{% url 'app_kasports:agregar_tenis' %}" class="btn">Agregar Tenis</a>
+</div>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="modelo" {% if campo == 'modelo' %}selected{% endif %}>Modelo</option>
+        <option value="color" {% if campo == 'color' %}selected{% endif %}>Color</option>
+        <option value="estilo" {% if campo == 'estilo' %}selected{% endif %}>Estilo</option>
+        <option value="genero" {% if campo == 'genero' %}selected{% endif %}>Género</option>
+        <option value="talla" {% if campo == 'talla' %}selected{% endif %}>Talla</option>
+        <option value="proveedor" {% if campo == 'proveedor' %}selected{% endif %}>Proveedor</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda...">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<table class="table-fixed-tenis">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Proveedor</th>
+            <th>Modelo</th>
+            <th>Estilo</th>
+            <th>Color</th>
+            <th>Género</th>
+            <th>Tallas</th>
+            <th>Precio (MXN)</th>
+            <th>Stock</th>
+            <th>Imagen</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in page_obj %}
+        <tr>
+            <td>{{ t.id }}</td>
+            <td>
+                {% if campo == 'proveedor' and query %}
+                    {{ t.proveedor.nombre|highlight:query|safe }}
+                {% else %}
+                    {{ t.proveedor.nombre }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'modelo' and query %}
+                    {{ t.modelo|highlight:query|safe }}
+                {% else %}
+                    {{ t.modelo }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'estilo' and query %}
+                    {{ t.estilo|highlight:query|safe }}
+                {% else %}
+                    {{ t.estilo }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'color' and query %}
+                    {{ t.color|highlight:query|safe }}
+                {% else %}
+                    {{ t.color }}
+                {% endif %}
+            </td>
+            <td>{{ t.genero }}</td>
+            <td>
+                {% if campo == 'talla' and query %}
+                    {{ t.tallas_disponibles|highlight:query|safe }}
+                {% else %}
+                    {% if t.tallas_disponibles %}{{ t.tallas_disponibles }}{% else %}-{% endif %}
+                {% endif %}
+            </td>
+            <td>{{ t.precio }}</td>
+            <td>{{ t.stock }}</td>
+            <td>
+                {% if t.imagen %}
+                    <img src="{{ t.imagen.url }}" alt="{{ t.modelo }}" style="height:50px;border-radius:5px;">
+                {% else %}-{% endif %}
+            </td>
+            <td class="acciones">
+                <a href="{% url 'app_kasports:actualizar_tenis' t.id %}" class="btn btn-edit">Editar</a>
+                <a href="{% url 'app_kasports:borrar_tenis' t.id %}" class="btn btn-danger">Borrar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="11">No hay tenis registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

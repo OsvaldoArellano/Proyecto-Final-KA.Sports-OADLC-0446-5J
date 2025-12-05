@@ -1,0 +1,90 @@
+{% extends 'administrador/base.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<div class="content-title">
+    <h2>Mensajes de Contacto</h2>
+</div>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="nombre" {% if campo == 'nombre' %}selected{% endif %}>Nombre</option>
+        <option value="email" {% if campo == 'email' %}selected{% endif %}>Correo</option>
+        <option value="mensaje" {% if campo == 'mensaje' %}selected{% endif %}>Mensaje</option>
+        <option value="leido" {% if campo == 'leido' %}selected{% endif %}>Estado Lectura</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda..." class="{% if query %}highlight{% endif %}" aria-label="Buscar">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<table class="table-fixed">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Mensaje</th>
+            <th>Fecha</th>
+            <th>Leído</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for m in page_obj %}
+        <tr>
+            <td>
+                {% if campo == 'nombre' and query %}
+                    {{ m.nombre_remitente|highlight:query|safe }}
+                {% else %}
+                    {{ m.nombre_remitente }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'email' and query %}
+                    {{ m.email_remitente|highlight:query|safe }}
+                {% else %}
+                    {{ m.email_remitente }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'mensaje' and query %}
+                    {{ m.mensaje|truncatechars:80|highlight:query|safe }}
+                {% else %}
+                    {{ m.mensaje|truncatechars:80 }}
+                {% endif %}
+            </td>
+            <td>{{ m.fecha_envio|date:"d/m/Y H:i" }}</td>
+            <td>
+                {% if campo == 'leido' and query %}
+                    {{ m.leido|yesno:"Sí,No"|highlight:query|safe }}
+                {% else %}
+                    {{ m.leido|yesno:"Sí,No" }}
+                {% endif %}
+            </td>
+            <td class="acciones">
+                <a href="{% url 'app_kasports:actualizar_mensaje' m.id %}" class="btn btn-edit">Editar</a>
+                <a href="{% url 'app_kasports:borrar_mensaje' m.id %}" class="btn btn-danger">Borrar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No hay mensajes.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

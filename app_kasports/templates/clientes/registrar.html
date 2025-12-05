@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro | KA.Sports</title>
+    <style>
+    body{
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        background-color: aliceblue;
+        text-align: center;
+    }
+    .cont{
+        margin-top: 5vh;
+        margin-left:auto;
+        margin-right: auto;
+        border: 3px solid rgb(35, 143, 150);
+        border-radius: 15px;
+        width: 40vw;
+        padding: 15px;
+        background-color: rgb(57,57,154);
+        color: beige;
+    }
+    .registro-btn{
+        width:10vw;
+        height: 5vh;
+        border: 2px solid aliceblue;
+        border-radius: 8px;
+        background-color: rgb(35, 143, 150);
+        margin-top: 8px;
+        color:white;
+        cursor:pointer;
+    }
+    img{
+        margin-top: 3vh;
+        margin-bottom: 3vh;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        height: 15vh;
+        border-radius: 10px;
+    }
+    a{
+        color: beige;
+        text-decoration: none;
+    }
+    a:hover{
+        text-decoration: underline;
+    }
+    input, textarea{
+        width:80%;
+        padding:8px;
+        border-radius:8px;
+        border:1px solid rgb(35,143,150);
+    }
+    .password-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        width: 80%;
+        margin: auto;
+    }
+    .password-container input{
+        flex: 1;
+        margin: 0;
+        width: auto;
+    }
+    .password-container button{
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        color: rgb(35, 143, 150);
+        padding: 8px;
+        opacity: 0.6;
+    }
+    .alert{
+        margin-top:10px;
+        padding:8px;
+        border-radius:5px;
+        background:#f8d7da;
+        color:#721c24;
+    }
+    .terminos-box{
+        text-align:left;
+        max-height:150px;
+        overflow:auto;
+        background-color:rgba(255,255,255,0.1);
+        padding:10px;
+        border-radius:8px;
+        margin-top:10px;
+        font-size:12px;
+    }
+    .requisitos-box{
+        text-align:left;
+        background-color:rgba(255,255,255,0.1);
+        padding:12px;
+        border-radius:8px;
+        margin-top:10px;
+        margin-bottom:10px;
+        font-size:13px;
+        display:none;
+    }
+    .requisito{
+        margin:5px 0;
+        padding:5px;
+        border-radius:4px;
+    }
+    .requisito.cumplido{
+        color: #90EE90;
+        background-color:rgba(144,238,144,0.2);
+    }
+    .requisito.cumplido::before{
+        content:"✓ ";
+        font-weight:bold;
+    }
+    .requisito.incumplido{
+        color: #FFB6C1;
+        background-color:rgba(255,182,193,0.2);
+    }
+    .requisito.incumplido::before{
+        content:"✗ ";
+        font-weight:bold;
+    }
+    </style>
+    <script>
+    function mostrarTerminos(){
+        alert("TÉRMINOS Y CONDICIONES:\n\n1. Tus datos serán utilizados únicamente para gestionar tus compras.\n2. Te comprometes a proporcionar información veraz.\n3. Los precios y existencias pueden cambiar sin previo aviso.\n4. Este sitio es un proyecto escolar sin compras reales.\n\nAl marcar la casilla aceptas estos términos.");
+    }
+    function togglePassword(id, btn) {
+        var input = document.getElementById(id);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.style.opacity = '1';
+        } else {
+            input.type = 'password';
+            btn.style.opacity = '0.6';
+        }
+    }
+    
+    function validarContrasena() {
+        const password = document.getElementById('password').value;
+        const requisitos = {
+            length: password.length >= 8,
+            mayuscula: /[A-Z]/.test(password),
+            minuscula: /[a-z]/.test(password),
+            numero: /\d/.test(password),
+            simbolo: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        };
+        
+        // Actualizar indicadores
+        document.getElementById('req-length').className = 'requisito ' + (requisitos.length ? 'cumplido' : 'incumplido');
+        document.getElementById('req-mayuscula').className = 'requisito ' + (requisitos.mayuscula ? 'cumplido' : 'incumplido');
+        document.getElementById('req-minuscula').className = 'requisito ' + (requisitos.minuscula ? 'cumplido' : 'incumplido');
+        document.getElementById('req-numero').className = 'requisito ' + (requisitos.numero ? 'cumplido' : 'incumplido');
+        document.getElementById('req-simbolo').className = 'requisito ' + (requisitos.simbolo ? 'cumplido' : 'incumplido');
+        
+        // Mostrar/ocultar requisitos
+        const todoCumplido = Object.values(requisitos).every(v => v);
+        document.getElementById('requisitos-box').style.display = 'block';
+    }
+    
+    function ocultarRequisitos() {
+        const password = document.getElementById('password').value;
+        if (!password) {
+            document.getElementById('requisitos-box').style.display = 'none';
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="cont">
+        <h2>Registrarse</h2>
+        <img src="{% static 'images/logo.png' %}">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <label>Nombre:</label><br>
+            <input type="text" name="nombre" required><br><br>
+
+            <label>Apellido:</label><br>
+            <input type="text" name="apellido" required><br><br>
+
+            <label>Usuario:</label><br>
+            <input type="text" name="username" required><br><br>
+
+            <label>Correo:</label><br>
+            <input type="email" name="email" required><br><br>
+
+            <label>Teléfono:</label><br>
+            <input type="text" name="telefono" required><br><br>
+
+            <label>Dirección:</label><br>
+            <textarea name="direccion" rows="3" required></textarea><br><br>
+
+            <label>Contraseña:</label><br>
+            <div class="password-container">
+                <input type="password" name="password" id="password" required onkeyup="validarContrasena()" onblur="ocultarRequisitos()">
+                <button type="button" onclick="togglePassword('password', this)">◎</button>
+            </div>
+            
+            <div id="requisitos-box" class="requisitos-box">
+                <strong>Requisitos de contraseña:</strong>
+                <div id="req-length" class="requisito incumplido">Mínimo 8 caracteres</div>
+                <div id="req-mayuscula" class="requisito incumplido">Al menos una mayúscula (A-Z)</div>
+                <div id="req-minuscula" class="requisito incumplido">Al menos una minúscula (a-z)</div>
+                <div id="req-numero" class="requisito incumplido">Al menos un número (0-9)</div>
+                <div id="req-simbolo" class="requisito incumplido">Al menos un símbolo (!@#$%^&*)</div>
+            </div>
+            <br>
+            <label>Confirmar contraseña:</label><br>
+            <div class="password-container">
+                <input type="password" name="password_confirm" id="password_confirm" required>
+                <button type="button" onclick="togglePassword('password_confirm', this)">◎</button>
+            </div>
+            <br>
+
+            <button class="registro-btn" type="submit">Registrarse</button><br><br>
+            <a href="{% url 'app_kasports:login' %}">Inicia Sesión</a><br><br>
+            <a href="{% url 'app_kasports:index_cliente' %}">Volver al inicio</a>
+        </form>
+    </div>
+</body>
+</html>

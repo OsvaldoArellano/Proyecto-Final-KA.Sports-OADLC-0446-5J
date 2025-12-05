@@ -1,0 +1,98 @@
+{% extends 'administrador/base.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<div class="content-title">
+    <h2>Administradores</h2>
+    <a href="{% url 'app_kasports:agregar_administrador' %}" class="btn">Agregar Administrador</a>
+</div>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="username" {% if campo == 'username' %}selected{% endif %}>Usuario</option>
+        <option value="nombre" {% if campo == 'nombre' %}selected{% endif %}>Nombre</option>
+        <option value="apellido" {% if campo == 'apellido' %}selected{% endif %}>Apellido</option>
+        <option value="correo" {% if campo == 'correo' %}selected{% endif %}>Correo</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda...">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<table class="table-fixed">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Fecha Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for admin in page_obj %}
+        <tr>
+            <td>{{ admin.id }}</td>
+            <td>
+                {% if campo == 'username' and query %}
+                    {{ admin.user.username|highlight:query|safe }}
+                {% else %}
+                    {{ admin.user.username }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'nombre' and query %}
+                    {{ admin.user.first_name|highlight:query|safe }}
+                {% else %}
+                    {{ admin.user.first_name }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'apellido' and query %}
+                    {{ admin.user.last_name|highlight:query|safe }}
+                {% else %}
+                    {{ admin.user.last_name }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'correo' and query %}
+                    {{ admin.user.email|highlight:query|safe }}
+                {% else %}
+                    {{ admin.user.email }}
+                {% endif %}
+            </td>
+            <td>{{ admin.telefono }}</td>
+            <td>{{ admin.fecha_registro|date:"d/m/Y H:i" }}</td>
+            <td class="acciones">
+                <a href="{% url 'app_kasports:borrar_administrador' admin.id %}" class="btn btn-danger">Borrar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8">No hay administradores registrados</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% if page_obj.has_other_pages %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">Primera</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+    
+    <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Última</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

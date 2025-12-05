@@ -1,0 +1,117 @@
+{% extends 'administrador/base.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<div class="content-title">
+    <h2>Gorras</h2>
+    <a href="{% url 'app_kasports:agregar_gorra' %}" class="btn">Agregar Gorra</a>
+</div>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="modelo" {% if campo == 'modelo' %}selected{% endif %}>Modelo</option>
+        <option value="coleccion" {% if campo == 'coleccion' %}selected{% endif %}>Colección</option>
+        <option value="color" {% if campo == 'color' %}selected{% endif %}>Color</option>
+        <option value="genero" {% if campo == 'genero' %}selected{% endif %}>Género</option>
+        <option value="talla" {% if campo == 'talla' %}selected{% endif %}>Talla</option>
+        <option value="proveedor" {% if campo == 'proveedor' %}selected{% endif %}>Proveedor</option>
+    </select>
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda...">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<table class="table-fixed">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Proveedor</th>
+            <th>Modelo</th>
+            <th>Colección</th>
+            <th>Silueta</th>
+            <th>Visera</th>
+            <th>Broche</th>
+            <th>Color</th>
+            <th>Género</th>
+            <th>Tallas</th>
+            <th>Precio (MXN)</th>
+            <th>Stock</th>
+            <th>Imagen</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for g in page_obj %}
+        <tr>
+            <td>{{ g.id }}</td>
+            <td>
+                {% if campo == 'proveedor' and query %}
+                    {{ g.proveedor.nombre|highlight:query|safe }}
+                {% else %}
+                    {{ g.proveedor.nombre }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'modelo' and query %}
+                    {{ g.modelo|highlight:query|safe }}
+                {% else %}
+                    {{ g.modelo }}
+                {% endif %}
+            </td>
+            <td>
+                {% if campo == 'coleccion' and query %}
+                    {{ g.coleccion|highlight:query|safe }}
+                {% else %}
+                    {{ g.coleccion }}
+                {% endif %}
+            </td>
+            <td>{{ g.silueta }}</td>
+            <td>{{ g.visera }}</td>
+            <td>{{ g.broche }}</td>
+            <td>
+                {% if campo == 'color' and query %}
+                    {{ g.color|highlight:query|safe }}
+                {% else %}
+                    {{ g.color }}
+                {% endif %}
+            </td>
+            <td>{{ g.genero }}</td>
+            <td>
+                {% if campo == 'talla' and query %}
+                    {{ g.tallas_disponibles|highlight:query|safe }}
+                {% else %}
+                    {% if g.tallas_disponibles %}{{ g.tallas_disponibles }}{% else %}-{% endif %}
+                {% endif %}
+            </td>
+            <td>{{ g.precio }}</td>
+            <td>{{ g.stock }}</td>
+            <td>
+                {% if g.imagen %}
+                    <img src="{{ g.imagen.url }}" alt="{{ g.modelo }}" style="height:50px;border-radius:5px;">
+                {% else %}-{% endif %}
+            </td>
+            <td class="acciones">
+                <a href="{% url 'app_kasports:actualizar_gorra' g.id %}" class="btn btn-edit">Editar</a>
+                <a href="{% url 'app_kasports:borrar_gorra' g.id %}" class="btn btn-danger">Borrar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="14">No hay gorras registradas.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}

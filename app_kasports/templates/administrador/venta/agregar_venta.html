@@ -1,0 +1,73 @@
+{% extends 'administrador/base.html' %}
+
+{% block contenido %}
+<div class="form-container">
+<h2>Agregar Venta (Manual)</h2>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label>Cliente:</label>
+        <select name="cliente_id" required>
+            {% for c in clientes %}
+            <option value="{{ c.id }}">{{ c.user.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Carrito:</label>
+        <select name="carrito_id" required>
+            {% for c in carritos %}
+            <option value="{{ c.id }}">Carrito #{{ c.id }} - {{ c.cliente.user.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Método de pago:</label>
+        <select name="metodo_pago" required>
+            <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+            <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+            <option value="PayPal">PayPal</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Efectivo">Efectivo</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Subtotal:</label>
+        <input type="number" name="subtotal" step="0.01" required>
+    </div>
+
+    <div class="form-group">
+        <label>Impuesto:</label>
+        <input type="number" name="impuesto" step="0.01" required>
+    </div>
+
+    <div class="form-group">
+        <label>Costo de envío:</label>
+        <input type="number" name="costo_envio" step="0.01" required>
+    </div>
+
+    <div class="form-group">
+        <label>Total:</label>
+        <input type="number" name="total" step="0.01" required>
+    </div>
+
+    <div class="form-group">
+        <label>Estado:</label>
+        <select name="estado">
+            <option value="En proceso">En proceso</option>
+            <option value="Enviado">Enviado</option>
+            <option value="Entregado">Entregado</option>
+            <option value="Cancelado">Cancelado</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'app_kasports:ver_ventas' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+</div>
+{% endblock %}

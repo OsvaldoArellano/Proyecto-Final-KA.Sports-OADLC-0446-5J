@@ -1,0 +1,130 @@
+{% extends 'clientes/base_cliente.html' %}
+{% load currency_filters %}
+
+{% block contenido %}
+<h1>Gorras</h1>
+
+<form method="get" class="search-bar">
+    <label>Buscar por:</label>
+    <select name="campo">
+        <option value="modelo" {% if campo == 'modelo' %}selected{% endif %}>Modelo</option>
+        <option value="color" {% if campo == 'color' %}selected{% endif %}>Color</option>
+        <option value="coleccion" {% if campo == 'coleccion' %}selected{% endif %}>Colección</option>
+        <option value="silueta" {% if campo == 'silueta' %}selected{% endif %}>Silueta</option>
+        <option value="genero" {% if campo == 'genero' %}selected{% endif %}>Género</option>
+        <option value="talla" {% if campo == 'talla' %}selected{% endif %}>Talla</option>
+        <option value="proveedor" {% if campo == 'proveedor' %}selected{% endif %}>Proveedor</option>
+    </select>
+
+    <input type="text" name="q" value="{{ query }}" placeholder="Escribe tu búsqueda...">
+    <button type="submit" class="btn">Buscar</button>
+</form>
+
+<div style="text-align:center; margin-top: 10px; margin-bottom: 20px;">
+    <button class="btn" onclick="mostrarGuiaTallasGorra()">Guía de tallas de gorras</button>
+</div>
+<div id="guia-tallas-gorra-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:24px 18px; border-radius:10px; max-width:370px; margin:auto; position:relative; top:10vh;">
+        <h3>Guía de tallas de gorras</h3>
+        <p>Las gorras suelen ser talla única ajustable, pero si tu modelo tiene talla específica, consulta la siguiente referencia:</p>
+        <table style="width:100%; max-width:350px; border-collapse:collapse; margin-bottom:10px;">
+            <tr><th>Talla</th><th>Contorno de cabeza (cm)</th></tr>
+            <tr><td>XS</td><td>51-53</td></tr>
+            <tr><td>S</td><td>54-55</td></tr>
+            <tr><td>M</td><td>56-57</td></tr>
+            <tr><td>L</td><td>58-59</td></tr>
+            <tr><td>XL</td><td>60-61</td></tr>
+            <tr><td>UNITALLA</td><td>54-60</td></tr>
+        </table>
+        <p>Si tienes dudas, mide el contorno de tu cabeza justo por encima de las orejas.</p>
+        <button class="btn btn-danger" onclick="cerrarGuiaTallasGorra()" style="margin-top:10px;">Cerrar</button>
+    </div>
+</div>
+<script>
+function mostrarGuiaTallasGorra() {
+    document.getElementById('guia-tallas-gorra-modal').style.display = 'flex';
+}
+function cerrarGuiaTallasGorra() {
+    document.getElementById('guia-tallas-gorra-modal').style.display = 'none';
+}
+</script>
+
+<div class="prodt">
+    {% for g in page_obj %}
+    <section class="secp">
+        <h3>{% if campo == 'modelo' %}{{ g.modelo|highlight:query|safe }}{% else %}{{ g.modelo }}{% endif %}</h3>
+
+        {% if g.imagen %}
+            <img src="{{ g.imagen.url }}" alt="{{ g.modelo }}">
+        {% endif %}
+
+        <ul>
+            <li>Marca: {% if campo == 'proveedor' %}{{ g.proveedor.nombre|highlight:query|safe }}{% else %}{{ g.proveedor.nombre }}{% endif %}</li>
+            <li>Modelo: {% if campo == 'modelo' %}{{ g.modelo|highlight:query|safe }}{% else %}{{ g.modelo }}{% endif %}</li>
+            <li>Colección: {% if campo == 'coleccion' %}{{ g.coleccion|highlight:query|safe }}{% else %}{{ g.coleccion }}{% endif %}</li>
+            <li>Silueta: {% if campo == 'silueta' %}{{ g.silueta|highlight:query|safe }}{% else %}{{ g.silueta }}{% endif %}</li>
+            <li>Visera: {{ g.visera }}</li>
+            <li>Broche: {{ g.broche }}</li>
+            <li>Color: {% if campo == 'color' %}{{ g.color|highlight:query|safe }}{% else %}{{ g.color }}{% endif %}</li>
+            <li>Genero: {% if campo == 'genero' %}{{ g.genero|highlight:query|safe }}{% else %}{{ g.genero }}{% endif %}</li>
+            <li>Tallas disponibles:
+                {% if g.tallas_disponibles %}
+                    <div class="size-list">
+                        {% for s in g.tallas_disponibles|split_by %}
+                            <span class="size-badge">{{ s }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    -
+                {% endif %}
+            </li>
+            <li>Precio: {{ g.precio }} MXN</li>
+            <li>Stock: {{ g.stock }}</li>
+        </ul>
+
+        {% if user.is_authenticated and user.cliente %}
+            <form method="post" action="{% url 'app_kasports:agregar_carrito' 'gorra' g.id %}">
+                {% csrf_token %}
+                {% if g.tallas_disponibles %}
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:nowrap;">
+                        <label for="talla_{{ g.id }}" style="margin-bottom:0;">Talla:</label>
+                        <select name="talla" id="talla_{{ g.id }}" class="size-select" required style="margin-bottom:0;">
+                            {% for s in g.tallas_disponibles|split_by %}
+                                <option value="{{ s }}">{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="cantidad_{{ g.id }}" style="margin-bottom:0;">Cantidad:</label>
+                        <input type="number" name="cantidad" id="cantidad_{{ g.id }}" min="1" max="{{ g.stock }}" value="1" style="width:60px; margin-bottom:0;" required>
+                    </div>
+                {% else %}
+                    <span>-</span>
+                {% endif %}
+                <button type="submit" class="btn" style="margin-top:8px;">Agregar al carrito</button>
+            </form>
+        {% elif user.is_authenticated and user.administrador %}
+            <p style="color:red;">Opción solo para clientes</p>
+        {% else %}
+            <p style="color:red;">Inicia sesión o regístrate</p>
+        {% endif %}
+    </section>
+    {% empty %}
+    <p>No hay productos disponibles.</p>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1&q={{ query }}&campo={{ campo }}">&laquo; Primero</a>
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&campo={{ campo }}">Anterior</a>
+    {% endif %}
+
+    <span class="current">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&campo={{ campo }}">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&campo={{ campo }}">Último &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %}
