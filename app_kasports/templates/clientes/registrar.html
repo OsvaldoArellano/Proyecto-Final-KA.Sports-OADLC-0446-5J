@@ -220,6 +220,22 @@
             </div>
             <br>
 
+            <div class="terminos-box">
+                <strong>Términos y Condiciones</strong>
+                <p>
+                    Este sitio es un proyecto académico de KA.Sports. Los datos registrados se usan
+                    solo para simular compras, historial y carrito. No se realizan cobros reales ni envíos.
+                    Al registrarte, aceptas que la información ingresada es verídica y que comprendes
+                    que la funcionalidad de pagos y entregas es solo simulada.
+                </p>
+            </div>
+            <br>
+            <label>
+                <input type="checkbox" name="acepta_terminos" value="1" required onclick="if(this.checked){mostrarTerminos()}"><br>
+                Acepto los Términos y Condiciones
+            </label>
+            <br><br>
+
             <button class="registro-btn" type="submit">Registrarse</button><br><br>
             <a href="{% url 'app_kasports:login' %}">Inicia Sesión</a><br><br>
             <a href="{% url 'app_kasports:index_cliente' %}">Volver al inicio</a>
